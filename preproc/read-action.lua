@@ -32,12 +32,12 @@ function read_data(raw_action,header)
   frames=header['num_frames']
   cols=header['ncols']
   rows=header['nrows']
-  data = torch.Tensor(frames,cols,rows)
+  data = torch.Tensor(frames,rows,cols)
   index=13
   for i=1,frames do
-    for j=1,cols do
-      print(index)
-      for k=1,rows do
+    --print(i)
+    for j=1,rows do
+      for k=1,cols do
         data[i][j][k]=read_int(raw_action,index)
         index=index+4 
       end
@@ -56,5 +56,7 @@ function read_int(raw_action,pos)
 end
 
 if table.getn(arg) > 0 then
-  read_action(arg[1])
+  data=read_action(arg[1])
+  conv_filename=string.gsub(arg[1],".bin",".tensor")
+  torch.save(conv_filename,data)
 end
