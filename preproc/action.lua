@@ -43,9 +43,49 @@ function get_sobol_operator()
   return sobel3D
 end
 
-if table.getn(arg) > 0 then
-  action=torch.load(arg[1])
+function action_summary(action,n)
+  n=n or 4
+  local size=action:size()
+  local summary=torch.Tensor(n,size[2],size[3])
+  local segment_size=math.floor(size[1]/n)
+  for i=1,n do
+    local first=(i-1)*segment_size +1
+    local last=i*segment_size
+    if i==n then
+      last=size[1]
+    end
+    segment_summary(first,last,action,summary[i])
+  end
+  return summary
+end
+
+function segment_summary(first,last,input,output)
+  local frame_size=output:size()
+  for x=1,frame_size[1] do
+    for y=1,frame_size[2] do
+      output[x][y]=0.0
+      for j=first,last do
+        output[x][y]=output[x][y]+input[j][x][y]
+      end
+      output[x][y]= output[x][y]/(last -first+1)
+    end
+  end 
+end
+
+function conv_diff(filename)
+  action=torch.load(filename)
   conv_filename=string.gsub(arg[1],".tensor",".diff")
   action_diff=compute_gradient(action)
   torch.save(conv_filename,action_diff)
+end
+
+function get_action_summary(filename)
+  action=torch.load(filename)
+  conv_filename=string.gsub(arg[1],".diff",".summary")
+  action_diff=action_summary(action)
+  torch.save(conv_filename,action_diff)
+end
+
+if table.getn(arg) > 0 then
+  get_action_summary(arg[1])
 end
