@@ -4,12 +4,19 @@ require 'image'
 
 function read_action(input)
   local binary = assert(io.open(input,"rb"))
+  --local raw_action = {}
+  --repeat
+  --  local str = binary:read(4*1024)
+  --  for c in (str or ''):gmatch'.' do
+  --    t[#raw_action+1] = c:byte()
+  --  end
+  --until not str
+  --binary:close()
   raw_action = binary:read("*all") 
   binary:close()
-
+  --print(string.byte(raw_action,1000))
   header=read_header(raw_action)
   data=read_data(raw_action,header)
- 
   return data
 end
 
@@ -49,14 +56,25 @@ end
 function read_int(raw_action,pos)
   integer=raw_action:byte(pos)
   base=256
+  --print(integer)
   integer=integer+raw_action:byte(pos+1)*base
   --integer=integer+raw_action:byte(pos+2)*(base^2)
   --integer=integer+raw_action:byte(pos+3)*(base^3)
   return integer
 end
 
-if table.getn(arg) > 0 then
-  data=read_action(arg[1])
-  conv_filename=string.gsub(arg[1],".bin",".tensor")
+function raw_to_tensor(filename)
+  data=read_action(filename)
+  print(data:size())  
+  conv_filename=string.gsub(filename,".bin",".tensor")
   torch.save(conv_filename,data)
+end
+
+function transform_file(in_file,out_file)
+  data=read_action(in_file)
+  torch.save(out_file,data)
+end
+
+if table.getn(arg) > 0 then
+  transform_file(arg[1],arg[2])
 end
