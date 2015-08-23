@@ -2,15 +2,30 @@ require 'image'
 require 'torch'
 require 'os'
 require 'io'
-require 'show-action'
 
 function nonzero_action(action)
-  extr=find_extreme_points(action[1])
-  dim=extr[2]-extr[1]
+  local extr=find_extreme_points(action[1])
+  local nframes=action:size()[1]
+  for i=2,nframes do
+    local cnd_extr=find_extreme_points(action[i])
+    if extr[1][1] > cnd_extr[1][1] then
+      extr[1][1]=cnd_extr[1][1]
+    end
+    if extr[1][2] > cnd_extr[1][2] then
+      extr[1][2]=cnd_extr[1][2]
+    end
+    if extr[2][1] < cnd_extr[2][1] then
+      extr[2][1]=cnd_extr[2][1]
+    end
+    if extr[2][2] < cnd_extr[2][2] then
+      extr[2][2]=cnd_extr[2][2]
+    end
+  end
+  local dim=extr[2]-extr[1]
   print(dim)
   print(dim[1]*dim[2])
   nonzero=remove_zeros(extr,action)
-  show_action(nonzero)
+  return nonzero
 end
 
 function find_extreme_points(frame)
@@ -56,7 +71,12 @@ function remove_zeros(extreme_points,action)
   return action:sub(1,size[1],min[1],max[1],min[2],max[2])
 end
 
+function to_nonzero(in_file,out_file)
+  action=torch.load(in_file)
+  nonzero= nonzero_action(action)
+  torch.save(out_file,nonzero)
+end
+
 if table.getn(arg) > 0 then
-  action=torch.load(arg[1])
-  nonzero_action(action)
+  to_nonzero(arg[1],arg[2])
 end
