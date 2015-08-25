@@ -28,6 +28,12 @@ def to_diff(in_file,out_file):
     cmd="th action.lua " + in_file+" "+out_file
     os.system(cmd)
 
+def to_action_desc(in_file,out_file):
+    out_file=out_file.replace(".diff",".desc")
+    print(out_file)
+    cmd="th action-desc.lua " + in_file+" "+out_file
+    os.system(cmd)
+
 def get_all_files(path):
     return [ f for f in listdir(path) if isfile(join(path,f)) ]
 
@@ -62,9 +68,9 @@ def show_dim(action_file):
     cmd="qlua show-dim.lua " + action_file
     os.system(cmd)
 
-in_path="/home/user/Desktop/nonzero_data/"
-out_path="/home/user/Desktop/diff_data/"
+path="/home/user/Desktop/"
+in_path=path+"diff_data/"
+out_path=path+"desc_data/"
 
-#raw_to_tensor(in_path+scene,out_path+scene)
-#transform_data(in_path,out_path,to_diff)
-show_data(out_path,show_dim,get_category_filter(20))
+#transform_data(in_path,out_path,to_action_desc)
+show_data(out_path,show_action,get_category_filter(7))
