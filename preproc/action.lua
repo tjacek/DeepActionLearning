@@ -1,7 +1,23 @@
 require 'torch'
 require 'math'
 
-function compute_gradient(action)
+function simple_gradient(action) 
+  local size=action:size()
+  local action_diff=torch.Tensor(size[1]-2,size[2]-2,size[3]-2)
+  local new_size=action_diff:size()
+  for fr=1,new_size[1] do
+    print(fr)
+    for x=1,new_size[2] do
+      for y=1,new_size[3] do
+        delta=action[fr+2][x][y]-action[fr][x][y]
+        action_diff[fr][x][y]=math.abs(delta)
+      end
+    end
+  end
+  return action_diff
+end
+
+function sobel_gradient(action)
   local size=action:size()
   local action_diff=torch.Tensor(size[1]-2,size[2]-2,size[3]-2)
   sobel=get_sobol_operator()
@@ -86,6 +102,12 @@ function get_action_summary(filename)
   torch.save(conv_filename,action_diff)
 end
 
-if table.getn(arg) > 0 then
-  get_action_summary(arg[1])
+function to_diff(in_file,out_file)
+  action=torch.load(in_file)
+  diff=simple_gradient(action)
+  torch.save(out_file,diff)
+end
+
+if table.getn(arg) > 1 then
+  to_diff(arg[1],arg[2])
 end
