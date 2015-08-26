@@ -53,9 +53,16 @@ def get_category_filter(integer):
 def extract_category(filename):
     prefix=filename.split("_")[0]
     if(prefix[0]!='a'):
-        return -1
+        return None
     category=prefix.replace("a","")    
     return int(category)
+
+def extract_person(filename):
+    prefix=filename.split("_")[1]
+    if(prefix[0]!='s'):
+        return None
+    person=prefix.replace("s","")    
+    return int(person)
 
 def show_action(action_file):
     print(action_file)
@@ -68,9 +75,25 @@ def show_dim(action_file):
     cmd="qlua show-dim.lua " + action_file
     os.system(cmd)
 
+def split_dataset(source,train,test):
+    all_files = get_all_files(source)
+    for filename in all_files:
+        old_path=source+filename
+        if((extract_person(filename)%2)==1):
+            new_path=train+filename
+        else:
+            new_path=test+filename
+        print(old_path)
+        print(new_path)
+        os.system("cp "+old_path+" "+new_path)
+
 path="/home/user/Desktop/"
 in_path=path+"diff_data/"
 out_path=path+"desc_data/"
 
 #transform_data(in_path,out_path,to_action_desc)
-show_data(out_path,show_action,get_category_filter(7))
+#show_data(out_path,show_action,get_category_filter(19))
+
+train=path+"dataset_1/train/"
+test=path+"dataset_1/test/"
+split_dataset(out_path,train,test)
