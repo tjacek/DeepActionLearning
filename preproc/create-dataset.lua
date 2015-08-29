@@ -1,24 +1,28 @@
 require 'lfs'
 require 'torch'
 
-function create_dataset(input_dir,output)
+function create_dataset(input_dir,output_data,output_labels,image)
   local filenames=get_filenames(input_dir)
   local dataset=get_torch_dataset(filenames)
-  torch.save(output,dataset)
+  torch.save(output_data,dataset[1])
+  torch.save(output_labels,dataset[2])
 end
 
-function get_torch_dataset(filenames)
+function get_torch_dataset(filenames,image)
   local nframes=table.getn(filenames)  
   local dim=torch.load(filenames[1]):size()
   local img_size=dim[1]*dim[2]
-  local dataset=torch.Tensor(nframes,2,img_size)
+  local dataset=torch.Tensor(nframes,img_size)
+  local labels=torch.Tensor(nframes)
   for i,filename in pairs(filenames) do
     local image=torch.load(filename)
-    image=image:resize(img_size)
-    dataset[i][1]=image
-    dataset[i][2]=get_label(filename)
+    if not image then
+      image=image:resize(img_size)
+    end
+    dataset[i]=image
+    labels[i]=get_label(filename)
   end
-  return dataset
+  return {dataset,labels}
 end
 
 function get_simple_dataset(filenames)
@@ -50,7 +54,8 @@ function get_filenames(dir)
 end
 
 if table.getn(arg) > 0 then
-  input="/home/user/Desktop/dataset_1/test/"
-  output="/home/user/Desktop/dataset_1/test.tensor"
-  create_dataset(input,output)
+  input="/home/user/Desktop/dataset_1/train/"
+  output_data="/home/user/Desktop/dataset_1/train.tensor"
+  output_labels="/home/user/Desktop/dataset_1/train_labels.tensor"
+  create_dataset(input,output_data,output_labels)
 end
