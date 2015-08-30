@@ -3,7 +3,7 @@ require 'torch'
 
 function create_dataset(input_dir,output_data,output_labels,image)
   local filenames=get_filenames(input_dir)
-  local dataset=get_torch_dataset(filenames)
+  local dataset=get_torch_dataset(filenames,true)
   torch.save(output_data,dataset[1])
   torch.save(output_labels,dataset[2])
 end
@@ -12,7 +12,12 @@ function get_torch_dataset(filenames,image)
   local nframes=table.getn(filenames)  
   local dim=torch.load(filenames[1]):size()
   local img_size=dim[1]*dim[2]
-  local dataset=torch.Tensor(nframes,img_size)
+  local dataset=nil
+  if not image then
+    dataset=torch.Tensor(nframes,img_size)
+  else
+    dataset=torch.Tensor(nframes,dim[1],dim[2])
+  end
   local labels=torch.Tensor(nframes)
   for i,filename in pairs(filenames) do
     local image=torch.load(filename)
@@ -53,9 +58,9 @@ function get_filenames(dir)
   return filenames
 end
 
-if table.getn(arg) > 0 then
-  input="/home/user/Desktop/dataset_1/train/"
-  output_data="/home/user/Desktop/dataset_1/train.tensor"
-  output_labels="/home/user/Desktop/dataset_1/train_labels.tensor"
-  create_dataset(input,output_data,output_labels)
+if table.getn(arg) > 2 then
+  --input="/home/user/Desktop/dataset_1/train/"
+  --output_data="/home/user/Desktop/dataset_1/train.tensor"
+  --output_labels="/home/user/Desktop/dataset_1/train_labels.tensor"
+  create_dataset(arg[1],arg[2],arg[3])
 end

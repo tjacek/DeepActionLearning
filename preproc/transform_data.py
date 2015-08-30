@@ -34,6 +34,12 @@ def to_action_desc(in_file,out_file):
     cmd="th action-desc.lua " + in_file+" "+out_file
     os.system(cmd)
 
+def to_var(in_file,out_file):
+    out_file=out_file.replace(".nonzero",".var")
+    print(out_file)
+    cmd="th action-variance.lua " + in_file+" "+out_file
+    os.system(cmd)
+
 def get_all_files(path):
     return [ f for f in listdir(path) if isfile(join(path,f)) ]
 
@@ -87,13 +93,24 @@ def split_dataset(source,train,test):
         print(new_path)
         os.system("cp "+old_path+" "+new_path)
 
+def create_dataset(dir_name):
+    filename=dir_name.split("/")[-2]
+    out_data=dir_name.replace(filename+"/",filename+".tensor")
+
+    out_labels=dir_name.replace(filename+"/",filename+"_labels.tensor")
+    #out_labels=out_labels.replace("/","")
+    print(out_labels)
+    os.system("th create-dataset.lua "+dir_name+" "+out_data+" "+out_labels)
+
 path="/home/user/Desktop/"
-in_path=path+"diff_data/"
-out_path=path+"desc_data/"
+in_path=path+"nonzero_data/"
+out_path=path+"var_data/"
 
-#transform_data(in_path,out_path,to_action_desc)
-#show_data(out_path,show_action,get_category_filter(19))
+#transform_data(in_path,out_path,to_var)
+#show_data(out_path,show_action,get_category_filter(1))
 
-train=path+"dataset_1/train/"
-test=path+"dataset_1/test/"
-split_dataset(out_path,train,test)
+train=path+"dataset_2/train/"
+test=path+"dataset_2/test/"
+#split_dataset(out_path,train,test)
+
+create_dataset(train)
