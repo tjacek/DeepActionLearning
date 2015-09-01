@@ -30,14 +30,14 @@ end
 function create_model()
   n_categories=20
   local model = nn.Sequential() --Input 84x42
-  model:add(nn.SpatialConvolution(1, 16, 5, 5,2,2)) --output 40x19 
+  model:add(nn.SpatialConvolution(1, 4, 5, 5,2,2)) --output 40x19 
   model:add(nn.Tanh())
 
-  model:add(nn.SpatialConvolutionMM(16, 32,4,4,2,2)) -- output 19*8
+  model:add(nn.SpatialConvolutionMM(4, 6,4,4,2,2)) -- output 19*8
 
       -- stage 3 : standard 2-layer MLP:
-  model:add(nn.Reshape(32*19*8))
-  model:add(nn.Linear(32*19*8, 200))
+  model:add(nn.Reshape(6*19*8))
+  model:add(nn.Linear(6*19*8, 200))
   model:add(nn.Tanh())
   model:add(nn.Linear(200, n_categories))
   model:add(nn.LogSoftMax())
@@ -72,10 +72,11 @@ function train(model,dataset,labels,hyper_params)
       return f,gradParameters
     end
 
-    lbfgsState = lbfgsState or {
-            maxIter = hyper_params.maxIter,
-            lineSearch = hyper_params.lswolfe
-    }
+    lbfgsState = {}--lbfgsState or {
+    --        maxIter = hyper_params.maxIter,
+    --        lineSearch = hyper_params.lswolfe
+    --}
+    print(lbfgsState.maxIter)
     optim.lbfgs(feval, parameters, lbfgsState)
 
     print('LBFGS step')
@@ -102,7 +103,7 @@ function test(model,dataset,labels,hyper_params)
   -- test over given dataset
   print('<trainer> on testing Set:')
   for t = 1,dataset:size()[1] do
-    xlua.progress(t, dataset:size())
+    --xlua.progress(t, dataset:size())
     local inputs = torch.Tensor(1,1,geometry[1],geometry[2])
     local targets = torch.Tensor(1)
     inputs[1]=dataset[t]
