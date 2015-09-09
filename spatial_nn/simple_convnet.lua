@@ -12,7 +12,7 @@ function learning(train_data_file,train_labels_file,test_data_file,test_labels_f
   train_labels=torch.load(train_labels_file)
   test_dataset=torch.load(test_data_file)
   test_labels=torch.load(test_labels_file)
-  for i=1,100 do
+  for i=1,200 do
     train(model,train_dataset,train_labels,hyper_params)
     test(model,test_dataset,test_labels,hyper_params)
   end
@@ -30,16 +30,16 @@ end
 function create_model()
   n_categories=20
   local model = nn.Sequential() --Input 84x42
-  model:add(nn.SpatialConvolution(1, 4, 5, 5,2,2)) --output 40x19 
+  model:add(nn.SpatialConvolution(1, 16, 5, 5,2,2)) --output 40x19 
   model:add(nn.Tanh())
 
-  model:add(nn.SpatialConvolutionMM(4, 6,4,4,2,2)) -- output 19*8
+  model:add(nn.SpatialConvolutionMM(16, 32,4,4,2,2)) -- output 19*8
 
       -- stage 3 : standard 2-layer MLP:
-  model:add(nn.Reshape(6*19*8))
-  model:add(nn.Linear(6*19*8, 200))
+  model:add(nn.Reshape(32*19*8))
+  model:add(nn.Linear(32*19*8, 500))
   model:add(nn.Tanh())
-  model:add(nn.Linear(200, n_categories))
+  model:add(nn.Linear(500, n_categories))
   model:add(nn.LogSoftMax())
   return model
 end
@@ -71,12 +71,25 @@ function train(model,dataset,labels,hyper_params)
       gradParameters:zero()
 
          -- evaluate function for complete mini batch
-      print(inputs:size())
+
       local outputs = model:forward(inputs)
       local f = criterion:forward(outputs, targets)
 
       local df_do = criterion:backward(outputs, targets)
       model:backward(inputs, df_do)
+
+      if hyper_params.coefL1 ~= 0 or hyper_params.coefL2 ~= 0 then
+            -- locals:
+        local norm,sign= torch.norm,torch.sign
+
+        -- Loss:
+        f = f + hyper_params.coefL1 * norm(parameters,1)
+        f = f + hyper_params.coefL2 * norm(parameters,2)^2/2
+        
+        local delta= sign(parameters):mul(hyper_params.coefL1) + parameters:clone():mul(hyper_params.coefL2) 
+        -- Gradients:
+        gradParameters:add(delta)
+      end
 
       for i = 1,hyper_params.batchSize do
         confusion:add(outputs[i], targets[i])
@@ -86,8 +99,8 @@ function train(model,dataset,labels,hyper_params)
 
     sgd_optimisation(feval, parameters,hyper_params)   
 
-    print('SGD step')
-    print(' - progress in batch: ' .. t .. '/' .. dataset:size()[1])
+    --print('SGD step')
+    --print(' - progress in batch: ' .. t .. '/' .. dataset:size()[1])
     --print(' - nb of iterations: ' .. lbfgsState.nIter)
    -- print(' - nb of function evalutions: ' .. lbfgsState.funcEval)
   end
@@ -151,9 +164,11 @@ function default_hyper_params()
   hyper_params={}
   hyper_params.maxIter=100
   hyper_params.lswolfe=true
-  hyper_params.learningRate= 0.05
+  hyper_params.learningRate= 0.01
   hyper_params.momentum=0
-  hyper_params.batchSize=1
+  hyper_params.batchSize=293
+  hyper_params.coefL2=0.01
+  hyper_params.coefL1=0.00
   return hyper_params
 end
 
