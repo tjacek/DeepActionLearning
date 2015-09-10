@@ -1,14 +1,23 @@
 require 'lfs'
 require 'torch'
 
-function create_dataset(input_dir,output_data,output_labels,image)
+spatial="spatial"
+volumetric="volumetric"
+
+function create_dataset(input_dir,output_data,output_labels,data_type)
   local filenames=get_filenames(input_dir)
-  local dataset=get_torch_dataset(filenames,true)
+  local dataset=nil
+  if(data_type==volumetric) then
+    print("Volumetric")
+    dataset=get_volumetric_dataset(filenames)
+  else
+    dataset=get_spatial_dataset(filenames,true)
+  end 
   torch.save(output_data,dataset[1])
   torch.save(output_labels,dataset[2])
 end
 
-function get_torch_dataset(filenames,image)
+function get_spatial_dataset(filenames,image)
   local nframes=table.getn(filenames)  
   local dim=torch.load(filenames[1]):size()
   local img_size=dim[1]*dim[2]
@@ -25,6 +34,21 @@ function get_torch_dataset(filenames,image)
       image=image:resize(img_size)
     end
     dataset[i]=image
+    labels[i]=get_label(filename)
+  end
+  return {dataset,labels}
+end
+
+function get_volumetric_dataset(filenames)
+  local nframes=table.getn(filenames)  
+  local dim=torch.load(filenames[1]):size()
+  print(dim)
+  local dataset=torch.Tensor(nframes,dim[1],dim[2],dim[3])
+  local labels=torch.Tensor(nframes)
+  for i,filename in pairs(filenames) do
+    local inst=torch.load(filename)
+    print(inst:size())
+    dataset[i]=inst
     labels[i]=get_label(filename)
   end
   return {dataset,labels}
@@ -58,9 +82,9 @@ function get_filenames(dir)
   return filenames
 end
 
-if table.getn(arg) > 2 then
+if table.getn(arg) > 3 then
   --input="/home/user/Desktop/dataset_1/train/"
   --output_data="/home/user/Desktop/dataset_1/train.tensor"
   --output_labels="/home/user/Desktop/dataset_1/train_labels.tensor"
-  create_dataset(arg[1],arg[2],arg[3])
+  create_dataset(arg[1],arg[2],arg[3],arg[4])
 end

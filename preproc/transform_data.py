@@ -40,6 +40,18 @@ def to_var(in_file,out_file):
     cmd="th action-variance.lua " + in_file+" "+out_file
     os.system(cmd)
 
+def to_projection(in_file,out_file):
+    out_file=out_file.replace(".nonzero","_yz.nonzero")
+    print(out_file)
+    cmd="th projection.lua " + in_file+" "+out_file
+    os.system(cmd)
+
+def to_volumetric_data(in_file,out_file):
+    out_file=out_file.replace(".nonzero",".vol")
+    print(out_file)
+    cmd="th volumetric-data.lua " + in_file+" "+out_file
+    os.system(cmd)
+
 def get_all_files(path):
     return [ f for f in listdir(path) if isfile(join(path,f)) ]
 
@@ -93,24 +105,37 @@ def split_dataset(source,train,test):
         print(new_path)
         os.system("cp "+old_path+" "+new_path)
 
-def create_dataset(dir_name):
+def create_dataset(dir_name,data_type="spatial"):
     filename=dir_name.split("/")[-2]
     out_data=dir_name.replace(filename+"/",filename+".tensor")
 
     out_labels=dir_name.replace(filename+"/",filename+"_labels.tensor")
     #out_labels=out_labels.replace("/","")
     print(out_labels)
-    os.system("th create-dataset.lua "+dir_name+" "+out_data+" "+out_labels)
+    cmd="th create-dataset.lua "
+    cmd+=dir_name+" "+out_data+" "+out_labels+" "+data_type
+    os.system(cmd)
+
+def make_dir(path):
+    if(not os.path.isdir(path)):
+	os.system("mkdir "+path) 
+
+def generate_complet_dataset(in_path,out_path):
+    make_dir(out_path)
+    train=out_path+"train/"
+    test=out_path+"test/"
+    make_dir(train)
+    make_dir(test) 
+    split_dataset(in_path,train,test)
+    create_dataset(train,"volumetric")
+    create_dataset(test,"volumetric")
 
 path="/home/user/Desktop/"
-in_path=path+"nonzero_data/"
-out_path=path+"var_data/"
+in_path=path+"volumetric_data/"
+out_path=path+"volumetric_data/"
+generate_complet_dataset(in_path,path+"dataset_3/")
 
-#transform_data(in_path,out_path,to_var)
-#show_data(out_path,show_action,get_category_filter(1))
-
-train=path+"dataset_2/train/"
-test=path+"dataset_2/test/"
-#split_dataset(out_path,train,test)
-
-create_dataset(train)
+#in_path=path+"diff_data/"
+#out_path=path+"volumetric_data/"
+#transform_data(in_path,out_path, to_action_desc)
+#show_data(out_path,show_action,get_category_filter(18))
