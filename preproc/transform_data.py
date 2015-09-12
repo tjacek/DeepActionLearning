@@ -41,7 +41,7 @@ def to_var(in_file,out_file):
     os.system(cmd)
 
 def to_projection(in_file,out_file):
-    out_file=out_file.replace(".nonzero","_yz.nonzero")
+    out_file=out_file.replace(".nonzero","_zx.nonzero")
     print(out_file)
     cmd="th projection.lua " + in_file+" "+out_file
     os.system(cmd)
@@ -120,22 +120,30 @@ def make_dir(path):
     if(not os.path.isdir(path)):
 	os.system("mkdir "+path) 
 
-def generate_complet_dataset(in_path,out_path):
+def generate_complet_dataset(in_path,out_path,data_type):
     make_dir(out_path)
     train=out_path+"train/"
     test=out_path+"test/"
     make_dir(train)
     make_dir(test) 
     split_dataset(in_path,train,test)
-    create_dataset(train,"volumetric")
-    create_dataset(test,"volumetric")
+    create_dataset(train,data_type)
+    create_dataset(test,data_type)
+
+def generate_spatial_data(in_path,out_path):
+    proj_path=out_path+"proj/"
+    make_dir(proj_path)
+    transform_data(in_path,proj_path, to_projection)
+    var_path=out_path+"var/"
+    make_dir(var_path)
+    transform_data(proj_path,var_path,to_var)
+    generate_complet_dataset(var_path,out_path,"spatial")
 
 path="/home/user/Desktop/"
-in_path=path+"volumetric_data/"
-out_path=path+"volumetric_data/"
-generate_complet_dataset(in_path,path+"dataset_3/")
+in_path=path+"nonzero_data/"
+out_path=path+"zx/"
+#generate_complet_dataset(in_path,path+"dataset_4/")
+generate_spatial_data(in_path,out_path)
 
-#in_path=path+"diff_data/"
-#out_path=path+"volumetric_data/"
 #transform_data(in_path,out_path, to_action_desc)
-#show_data(out_path,show_action,get_category_filter(18))
+#show_data(in_path,show_action,None)#get_category_filter(18))

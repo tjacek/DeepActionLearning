@@ -5,18 +5,18 @@ function projection(action,plane)
   local max_z=torch.max(action)
   local min_z=first_nonzero(action)
   local size=action:size()
-  local action_zx=torch.Tensor(size[1],size[2],max_z-min_z+2):zero()
+  local action_proj=torch.Tensor(size[1],size[2],max_z-min_z+2):zero()
   for i=1,size[1] do
     for j=1,size[2] do
       for k=1,size[3] do
-        plane(i,j,k,min_z,action)
+        plane(i,j,k,min_z,action,action_proj)
       end
     end
   end
-  return action_zx
+  return action_proj
 end
 
-function plane_zx(i,j,k,min_z,action)
+function plane_zx(i,j,k,min_z,action,action_zx)
   local value=math.ceil(action[i][j][k],1)
   if( value>2) then
     action_zx[i][j][value-min_z+1]=k
@@ -46,9 +46,9 @@ function first_nonzero(action)
   return min
 end
 
-function projected_img(input_file,output_file)
+function projected_img(input_file,output_file,plane)
   input=torch.load(input_file)
-  output=projection_zy(input)
+  output=projection(input,plane)
   torch.save(output_file,output)
 end
 
