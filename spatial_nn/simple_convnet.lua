@@ -4,7 +4,7 @@ require 'nnx'
 require 'optim'
 require 'image'
 
-function learning(train_data_file,train_labels_file,test_data_file,test_labels_file)
+function learning_(train_data_file,train_labels_file,test_data_file,test_labels_file)
   hyper_params=default_hyper_params()
   model=create_model()
   global_vars(model)
@@ -45,8 +45,6 @@ function create_model()
 end
 
 function train(model,dataset,labels,hyper_params)
-
-  epoch = epoch or 1
   local time = sys.clock()
   local nsamples=dataset:size()[1]
   for t = 1,nsamples,hyper_params.batchSize do
@@ -99,23 +97,19 @@ function train(model,dataset,labels,hyper_params)
 
     sgd_optimisation(feval, parameters,hyper_params)   
 
-    --print('SGD step')
-    --print(' - progress in batch: ' .. t .. '/' .. dataset:size()[1])
-    --print(' - nb of iterations: ' .. lbfgsState.nIter)
-   -- print(' - nb of function evalutions: ' .. lbfgsState.funcEval)
   end
 
   time = sys.clock() - time
   time = time / dataset:size()[1]
   print("<trainer> time to learn 1 sample = " .. (time*1000) .. 'ms')
   
-
+  local valid=  confusion.totalValid
    -- print confusion matrix
   print(confusion)
   print('% mean class accuracy (train set)' .. (confusion.totalValid * 100))
-  confusion:zero()
 
-  epoch = epoch + 1
+  confusion:zero()
+  return valid
 end
 
 function lbfgs_optimisation(feval, parameters,hyper_params)
@@ -154,7 +148,7 @@ function test(model,dataset,labels,hyper_params)
 
   time = sys.clock() - time
   time = time / dataset:size()[1]
-  print("<trainer> time to test 1 sample = " .. (time*1000) .. 'ms')
+  print(" time to test 1 sample = " .. (time*1000) .. 'ms')
 
   print(confusion)
   confusion:zero()
@@ -167,15 +161,15 @@ function default_hyper_params()
   hyper_params.learningRate= 0.01
   hyper_params.momentum=0
   hyper_params.batchSize=293
-  hyper_params.coefL2=0.01
+  hyper_params.coefL2=0.20
   hyper_params.coefL1=0.00
   return hyper_params
 end
 
-path="/home/user/Desktop/dataset_2/"
-train_data_file=path .. "train.tensor"
-train_labels_file=path .. "train_labels.tensor"
-test_data_file=path .. "test.tensor"
-test_labels_file=path .. "test_labels.tensor"
-learning(train_data_file,train_labels_file,test_data_file,test_labels_file)
+--path="/home/user/Desktop/dataset_2/"
+--train_data_file=path .. "train.tensor"
+--train_labels_file=path .. "train_labels.tensor"
+--test_data_file=path .. "test.tensor"
+--test_labels_file=path .. "test_labels.tensor"
+--learning(train_data_file,train_labels_file,test_data_file,test_labels_file)
 

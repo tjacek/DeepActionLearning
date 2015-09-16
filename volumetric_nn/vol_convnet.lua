@@ -18,23 +18,6 @@ function learning(path)
   end
 end
 
-function get_input_files(path)
-  local input_files={}
-  input_files.train=path .. "train.tensor"
-  input_files.train_labels=path .. "train_labels.tensor"
-  input_files.test=path .. "test.tensor"
-  input_files.test_labels=path .. "test_labels.tensor"
-  return input_files
-end
-
-function get_dataset(input_files)
-  local dataset={}
-  for name, file in pairs(input_files) do
-    dataset[name]=torch.load(file)
-  end
-  return dataset
-end
-
 function default_hyper_params()
   hyper_params={}
   hyper_params.maxIter=100
@@ -55,21 +38,21 @@ end
 
 function create_model()
   n_categories=20
+  local first=8
+  local second=16
   local model = nn.Sequential()
-  model:add(nn.VolumetricConvolution(1,6, 4, 4,2,2,2,2)) -- Input 10*40*40
+  model:add(nn.VolumetricConvolution(1,first, 4, 4,2,2,2,2)) -- Input 10*40*40
   model:add(nn.Tanh())
-  model:add(nn.VolumetricConvolution(6,6, 4,5,5, 1,2,2))--Input 6 *5*19*19
-  model:add(nn.Reshape(6*1*8*8))  --Input 6*2*8*8
-  model:add(nn.Linear(6*1*8*8, 6*8*8))
+  model:add(nn.VolumetricConvolution(first,second, 4,5,5, 1,2,2))--Input 6 *5*19*19
+  model:add(nn.Reshape(second*1*8*8))  --Input 6*2*8*8
+  model:add(nn.Linear(second*1*8*8, 500))
   model:add(nn.Tanh())
-  model:add(nn.Linear(6*8*8, n_categories))
+  model:add(nn.Linear(500, n_categories))
   model:add(nn.LogSoftMax())
   return model
 end
 
 function train(model,dataset,labels,hyper_params)
-
-  epoch = epoch or 1
   local time = sys.clock()
   local nsamples=dataset:size()[1]
   for t = 1,nsamples,hyper_params.batchSize do
@@ -108,23 +91,20 @@ function train(model,dataset,labels,hyper_params)
     end
 
     sgd_optimisation(feval, parameters,hyper_params)   
-
-    --print('SGD step')
-    --print(' - progress in batch: ' .. t .. '/' .. dataset:size()[1])
-    --print(' - nb of iterations: ' .. lbfgsState.nIter)
-   -- print(' - nb of function evalutions: ' .. lbfgsState.funcEval)
+   
   end
 
   time = sys.clock() - time
   time = time / dataset:size()[1]
   print("<trainer> time to learn 1 sample = " .. (time*1000) .. 'ms')
-  
+
    -- print confusion matrix
   print(confusion)
-  print('% mean class accuracy (train set)' .. (confusion.totalValid * 100))
+  print('% mean class accuracy (train set)' .. (confusion.totalValid * 100)) 
+  local valid=  confusion.totalValid
   confusion:zero()
 
-  epoch = epoch + 1
+  return valid
 end
 
 function sgd_optimisation(feval, parameters,hyper_params)
@@ -160,5 +140,5 @@ function test(model,dataset,labels,hyper_params)
   confusion:zero()
 end
 
-path="/home/user/Desktop/dataset_3/"
-learning(path)
+--path="/home/user/Desktop/dataset_3/"
+--learning(path)
