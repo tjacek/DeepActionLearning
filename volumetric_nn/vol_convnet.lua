@@ -29,14 +29,31 @@ function default_hyper_params()
 end
 
 function global_vars(model)
-  geometry = {10,40,40}
+  geometry = {10,60,50}
   parameters,gradParameters = model:getParameters()
   criterion = nn.ClassNLLCriterion()
   n_categories=20
   confusion = optim.ConfusionMatrix(n_categories)
 end
 
+
 function create_model()
+  n_categories=20
+  local first=8
+  local second=10
+  local model = nn.Sequential()
+  model:add(nn.VolumetricConvolution(1,first, 4, 4,2,2,2,2)) -- Input 10*60*50
+  model:add(nn.Tanh())
+  model:add(nn.VolumetricConvolution(first,second, 4,6,5, 1,2,2))--Input  4*30*25
+  model:add(nn.Reshape(second*1*13*10))  --Input 1*13*11
+  model:add(nn.Linear(second*1*13*10, 500))
+  model:add(nn.Tanh())
+  model:add(nn.Linear(500, n_categories))
+  model:add(nn.LogSoftMax())
+  return model
+end
+
+function old_create_model()
   n_categories=20
   local first=8
   local second=16
@@ -55,6 +72,7 @@ end
 function train(model,dataset,labels,hyper_params)
   local time = sys.clock()
   local nsamples=dataset:size()[1]
+  print(dataset:size())
   for t = 1,nsamples,hyper_params.batchSize do
     local inputs = torch.Tensor(hyper_params.batchSize,1,geometry[1],geometry[2],geometry[3])
     local targets = torch.Tensor(hyper_params.batchSize)
@@ -140,5 +158,3 @@ function test(model,dataset,labels,hyper_params)
   confusion:zero()
 end
 
---path="/home/user/Desktop/dataset_3/"
---learning(path)

@@ -41,15 +41,21 @@ def to_var(in_file,out_file):
     os.system(cmd)
 
 def to_projection(in_file,out_file):
-    out_file=out_file.replace(".nonzero","_zx.nonzero")
+    out_file=out_file.replace(".nonzero","_zy.nonzero")
     print(out_file)
     cmd="th projection.lua " + in_file+" "+out_file
     os.system(cmd)
 
-def to_volumetric_data(in_file,out_file):
-    out_file=out_file.replace(".nonzero",".vol")
+def to_scaled_data(in_file,out_file):
+    out_file=out_file.replace(".nonzero",".space")
     print(out_file)
-    cmd="th volumetric-data.lua " + in_file+" "+out_file
+    cmd="th scale-space.lua " + in_file+" "+out_file
+    os.system(cmd)
+
+def to_vol_data(in_file,out_file):
+    out_file=out_file.replace(".space",".time")
+    print(out_file)
+    cmd="th scale-time.lua " + in_file+" "+out_file
     os.system(cmd)
 
 def get_all_files(path):
@@ -139,11 +145,15 @@ def generate_spatial_data(in_path,out_path):
     transform_data(proj_path,var_path,to_var)
     generate_complet_dataset(var_path,out_path,"spatial")
 
-path="/home/user/Desktop/"
-in_path=path+"nonzero_data/"
-out_path=path+"zx/"
-#generate_complet_dataset(in_path,path+"dataset_4/")
-generate_spatial_data(in_path,out_path)
+def generate_volumetric_data(in_path,out_path):
+    generate_complet_dataset(in_path,out_path,"volumetric")
 
-#transform_data(in_path,out_path, to_action_desc)
+path="/home/user/Desktop/"
+in_path=path+"time/"
+out_path=path+"dataset_4/"
+generate_volumetric_data(in_path,out_path)
+#generate_complet_dataset(in_path,path+"dataset_4/")
+#generate_spatial_data(in_path,out_path)
+
+#transform_data(in_path,out_path, to_vol_data)
 #show_data(in_path,show_action,None)#get_category_filter(18))

@@ -38,6 +38,6 @@ function get_dataset(input_files)
   return dataset
 end
 
---path="/home/user/Desktop/dataset_3/" 
---learning(path,"nn_vol")
+path="/home/user/Desktop/dataset_4/" 
+learning(path,"nn_vol2")
 
