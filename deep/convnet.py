@@ -1,23 +1,9 @@
-import sys,os
-sys.path.append(os.path.abspath('../cluster_images'))
 import numpy as np
+import deep,deep.reader
+import lasagne
 import theano
 import theano.tensor as T
-import lasagne
-import tools 
-import pickle
 from lasagne.regularization import regularize_layer_params, l2, l1
-import deep,train
-import utils
-import utils.imgs as imgs
-import utils.text as text
-import utils.data as data
-import utils.paths,utils.timer,utils.actions.tools
-import deep.reader
-import gc
-
-#import theano.sandbox.cuda
-#theano.sandbox.cuda.use("gpu")
 
 class Convet(deep.NeuralNetwork):
     def __init__(self,hyperparams,out_layer,preproc,
@@ -34,8 +20,8 @@ class Convet(deep.NeuralNetwork):
                                updates=updates,allow_input_downcast=True)
 
     def __call__(self,in_img):
-        print(type(in_img))
-        img4D=self.preproc.apply(in_img)
+        img3D=self.preproc(in_img)
+        img4D=np.expand_dims(img3D,0)
         return self.__features__(img4D).flatten()
     
     def get_category(self,img):
@@ -75,7 +61,7 @@ def build_model(params):
     pool_size2D=params["pool_size"]
     p_drop=params["p"]
     n_cats=params['n_cats']
-    n_hidden=params.get('n_hidden',300) 
+    n_hidden=params.get('n_hidden',100) 
 
     in_layer = lasagne.layers.InputLayer(
                shape=input_shape)
@@ -125,13 +111,11 @@ def get_updates(loss,out_layer):
     return updates
 
 def default_params():
-    return {"input_shape":(None,2,60,60),"num_filters":16,"n_hidden":100,
+    return {"input_shape":(None,2,64,64),"num_filters":16,"n_hidden":100,
               "filter_size":(5,5),"pool_size":(4,4),"p":0.5, "l1_reg":0.001}
 
-def get_model(n_cats,preproc,nn_path=None, params=None, compile=True,l1_reg=True,model_p=0.1):
-    if(nn_path==None):
-        compile=True
-    if(compile):
+def get_model(n_cats,preproc,nn_path=None, params=None,l1_reg=True,model_p=0.5):
+    if(nn_path is None):
         if(params==None):
             params=default_params()
         old_shape=params['input_shape']
@@ -141,55 +125,4 @@ def get_model(n_cats,preproc,nn_path=None, params=None, compile=True,l1_reg=True
     else:  
         nn_reader=deep.reader.NNReader(preproc)
         return nn_reader(nn_path,model_p)
-
-def binarize(cat,y):
-    print(y)
-    return [ int(cat==y_i)
-                for y_i in y]
-
-#@utils.timer.clock
-def experiment(x,y,preproc,nn_path,n_models,n_iters):
-    if(type(n_models)==int):
-        n_models=range(n_models)
-    for i in n_models:
-        nn_path_i=nn_path+'_'+str(i)
-        b_y=binarize(i,y)
-        n_cats=data.get_n_cats(b_y)
-        model=get_model(n_cats,preproc,nn_path_i,compile=True,model_p=0.5)
-        train.test_super_model(x,b_y,model,num_iter=n_iters)
-        model.get_model().save(nn_path_i)
-        gc.collect()
-
-def single_exp(in_path,nn_path):
-    preproc=tools.ImgPreprocProj()
-    imgset=imgs.make_imgs(img_path,norm=True)
-    extract_cat=data.ExtractCat()
-    x,y=imgs.to_dataset(imgset,extract_cat,preproc)
-    model=get_model(10,preproc,nn_path,compile=False,model_p=0.5)
-    train.test_super_model(x,y,model,num_iter=100)
-    model.get_model().save(nn_path)
-
-def conv_features(img_path,nn_path,out_path):
-    preproc=tools.ImgPreprocProj()
-    imgset=imgs.make_imgs(img_path,norm=True)
-    extract_cat=data.ExtractCat()
-    x,y=imgs.to_dataset(imgset,extract_cat,preproc)  
-    model=get_model(10,preproc,nn_path,compile=False,model_p=0.0)
-
-    transform_actions=utils.action.tools.ActionTransform()
-    transform_actions(img_path,out_path,model)
-
-if __name__ == "__main__":
-    img_path="../../Documents/EE/full"
-    out_path="../../Documents/EE/seq"
-
-    nn_path="../../Documents/EE/nn"
-    single_exp(img_path,nn_path)
-
-    #conv_features(img_path,nn_path,out_path)
-    #print("read")
-
-    #print(len(imgset))
-    #extract_cat=data.ExtractCat()
-    #x,y=imgs.to_dataset(imgset,extract_cat,preproc)
-    #experiment(x,y,preproc,nn_path,20,500)
+        
