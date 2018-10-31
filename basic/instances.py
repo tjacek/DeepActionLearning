@@ -45,7 +45,7 @@ class InstsGroup(object):
     
     def split(self, selector=None):
         if(selector is None):
-            selector=seqs.select.ModuloSelector(n=1)
+            selector= lambda inst_i: (inst_i.person % 2)==1
         train,test=[],[]
         for inst_i in self.instances.values():       
             if(selector(inst_i)):

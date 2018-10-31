@@ -28,7 +28,7 @@ class Dataset(object):
         insts=[]
         for i in range(n_insts):
             x_i,y_i,person_i,name_i=self.X[i],self.y[i],self.persons[i],self.names[i]
-            inst_i=dataset.instances.Instance(x_i,y_i,person_i,name_i)
+            inst_i=basic.instances.Instance(x_i,y_i,person_i,name_i)
             insts.append(inst_i)
         return instances.InstsGroup(insts)
 
