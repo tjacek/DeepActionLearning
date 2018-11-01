@@ -1,17 +1,21 @@
 import numpy as np
 import basic,utils
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from collections import Counter
+import seaborn as sn
+import matplotlib.pyplot as plt
+from matplotlib import offsetbox
 
 def learning(handcrafted_path=None,deep_path=None):
     datasets_dict=get_datasets(handcrafted_path,deep_path)
     datasets=preproc_dataset(datasets_dict)
     y_true,all_pred=get_prediction(datasets)
     y_pred=vote(all_pred)
-    return [y_j==y_i for y_i,y_j in zip(y_true,y_pred)]
+    show_result(y_true,y_pred)
 
 def get_datasets(handcrafted_path=None,deep_path=None):
     if(not handcrafted_path and not deep_path):
@@ -59,3 +63,17 @@ def vote(all_votes):
         cat_i=count.most_common()[0][0]
         y_pred.append(cat_i)
     return y_pred 
+
+def show_result(y_true,y_pred):
+    print(classification_report(y_true, y_pred,digits=4))
+    print("Accuracy %f " % accuracy_score(y_true,y_pred))
+    cf=confusion_matrix(y_true, y_pred)
+    cf_matrix=pd.DataFrame(cf,index=range(cf.shape[0]))
+    heat_map(cf_matrix)
+
+def heat_map(conf_matrix):
+    dim=conf_matrix.shape
+    df_cm = pd.DataFrame(conf_matrix, range(dim[0]),range(dim[1]))
+    sn.set(font_scale=1.0)#for label size
+    sn.heatmap(df_cm, annot=True,annot_kws={"size": 8}, fmt='g')
+    plt.show()
