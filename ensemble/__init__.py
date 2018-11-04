@@ -3,9 +3,11 @@ from collections import Counter
 import basic,utils
 import ensemble.tools
 
-def learning(handcrafted_path=None,deep_path=None):
+def learning(handcrafted_path=None,deep_path=None,feats=(250,100)):
     datasets_dict=get_datasets(handcrafted_path,deep_path)
-    feat_reduction(datasets_dict,hc_feats=250,deep_feats=100)
+    print(type(datasets_dict))
+    feat_reduction(datasets_dict,hc_feats=feats[0],deep_feats=feats[1])
+    print(type(datasets_dict))
     datasets=preproc_dataset(datasets_dict)
     y_true,all_pred=get_prediction(datasets)
     y_pred=vote(all_pred)
@@ -22,7 +24,7 @@ def get_datasets(handcrafted_path=None,deep_path=None):
         if(len(deep_paths)==0):
             raise Exception("No datasets at " + deep_paths)
         deep_datasets=[ basic.read_dataset(path_i) for path_i in deep_paths]
-	return {"handcrafted":handcrafted_dataset,"deep":deep_datasets}
+    return {"handcrafted":handcrafted_dataset,"deep":deep_datasets}
 
 def feat_reduction(datasets_dict,hc_feats=250,deep_feats=100):
     hc_data=datasets_dict['handcrafted']
@@ -37,10 +39,14 @@ def preproc_dataset(datasets_dict):
     datasets=datasets_dict["deep"]
     if(datasets_dict["handcrafted"]):
     	hc_data=datasets_dict["handcrafted"]
-        datasets=[basic.unify_datasets([hc_data,deep_i])
-                    for deep_i in datasets]
+        if(datasets_dict["deep"]):
+            datasets=[basic.unify_datasets([hc_data,deep_i])
+                        for deep_i in datasets]
+        else:
+            datasets=[hc_data]
     for dataset_i in datasets:
         dataset_i.norm()
+    print("Number of feats %d " % datasets[0].dim())
     return datasets
    
 def get_prediction(datasets):
