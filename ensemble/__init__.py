@@ -18,12 +18,12 @@ def get_datasets(handcrafted_path=None,deep_path=None):
         raise Exception("No dataset paths")
     handcrafted_dataset,deep_datasets=None,None
     if(handcrafted_path):
-        handcrafted_dataset=basic.read_dataset(handcrafted_path)
+        handcrafted_dataset= read_data(handcrafted_path)
     if(deep_path):
         deep_paths=utils.bottom_files(deep_path)
         if(len(deep_paths)==0):
-            raise Exception("No datasets at " + deep_paths)
-        deep_datasets=[ basic.read_dataset(path_i) for path_i in deep_paths]
+            raise Exception("No datasets at " + deep_path)
+        deep_datasets=[read_data(path_i) for path_i in deep_paths]
     return {"handcrafted":handcrafted_dataset,"deep":deep_datasets}
 
 def feat_reduction(datasets_dict,hc_feats=250,deep_feats=100):
@@ -44,8 +44,6 @@ def preproc_dataset(datasets_dict):
                         for deep_i in datasets]
         else:
             datasets=[hc_data]
-    for dataset_i in datasets:
-        dataset_i.norm()
     print("Number of feats %d " % datasets[0].dim())
     return datasets
    
@@ -63,4 +61,10 @@ def vote(all_votes):
         count =Counter(vote_i)
         cat_i=count.most_common()[0][0]
         y_pred.append(cat_i)
-    return y_pred 
+    return y_pred
+
+def read_data(in_path,norm=True):
+    dataset=basic.read_dataset(in_path)
+    if(norm):
+        dataset.norm()
+    return dataset
