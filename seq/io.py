@@ -1,11 +1,11 @@
 import numpy as np
-import seqs,utils
+import seq,utils
 import cv2,os
 
 class ActionReader(object):
     def __init__(self,read_dirs,read_seq,as_dict=False):
         self.as_dict=as_dict
-        self.get_action_desc=ut_dataset
+        self.get_action_desc=cp_dataset
         self.get_action_paths=read_dirs
         self.read_seq=read_seq  	
     
@@ -24,7 +24,7 @@ class ActionReader(object):
         name,cat,person=self.get_action_desc(action_path)       
         img_seq= self.read_seq(action_path) #read_text_action(action_path)
         print(name)
-        return seqs.Action(img_seq,name,cat,person)
+        return seq.Action(img_seq,name,cat,person)
 
 class ActionWriter(object):
     def __init__(self,img_seq=False):
