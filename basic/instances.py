@@ -64,7 +64,11 @@ class Instance(object):
     def  __str__(self):
         feats=[ str(feat_i) for feat_i in list(self.data)]
         feats=",".join(feats)
-        return "%s#%s#%s#%s" % (feats,self.cat,self.person,self.name)
+        name=self.name.replace('\n',"")
+        return "%s#%s#%s#%s" % (feats,self.cat,self.person,name)
+
+def make_instance(data_i,inst_i):
+    return Instance(data_i,inst_i.cat,inst_i.person,inst_i.name)
 
 def get_descs(names):
     if(type(names)==dict):
@@ -76,6 +80,9 @@ def get_descs(names):
 def from_files(in_path):
     with open(in_path) as f:
          lines=f.readlines()
+    lines=[ line_i 
+                for line_i in lines
+                    if(line_i.count('#')>=3)]
     insts=[ parse_instance(line_i)
                     for line_i in lines]                 
     return InstsGroup(insts)
