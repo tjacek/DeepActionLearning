@@ -8,11 +8,16 @@ import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 from sklearn.svm import SVC
 from sklearn.feature_selection import RFE
+from sklearn import tree
 
-def train_model(i,dataset_i):
-    print("dataset %d" % i)
+def train_model(i,dataset_i,tree_cls=False):
+    cls_name= "tree cls " if(tree_cls) else "logistic regression"
+    print("dataset %d %s" % (i,cls_name))
     train,test=dataset_i.split()
-    clf=LogisticRegression()
+    if(tree_cls):
+        clf=tree.DecisionTreeClassifier()
+    else:    
+        clf=LogisticRegression()
     clf = clf.fit(train.X, train.y)
     y_pred = clf.predict(test.X)
     return test.y,y_pred
