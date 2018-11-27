@@ -33,12 +33,22 @@ def rfe_selection(dataset,n=100):
     print(dataset.X.shape)
     return dataset  
 
-def show_result(y_true,y_pred):
+def show_result(y_true,y_pred,dataset=None):
     print(classification_report(y_true, y_pred,digits=4))
     print("Accuracy %f " % accuracy_score(y_true,y_pred))
+    if(dataset):
+        train,test=dataset.split()
+        show_errors(y_true,y_pred,test.names)
     cf=confusion_matrix(y_true, y_pred)
     cf_matrix=pd.DataFrame(cf,index=range(cf.shape[0]))
     heat_map(cf_matrix)
+
+def show_errors(y_true,y_pred,names):
+    errors=[ true_i!=pred_i for true_i,pred_i in zip(y_true,y_pred)]
+    error_descs=[(name_i,y_pred[i])
+                    for i,name_i in enumerate(names)
+                        if(errors[i])]
+    print(error_descs)
 
 def heat_map(conf_matrix):
     dim=conf_matrix.shape

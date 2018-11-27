@@ -11,7 +11,7 @@ def learning(handcrafted_path=None,deep_path=None,feats=(250,100)):
     datasets=preproc_dataset(datasets_dict)
     y_true,all_pred=get_prediction(datasets)
     y_pred=vote(all_pred)
-    ensemble.tools.show_result(y_true,y_pred)
+    ensemble.tools.show_result(y_true,y_pred,datasets[0])
 
 def get_datasets(handcrafted_path=None,deep_path=None):
     if(not handcrafted_path and not deep_path):
