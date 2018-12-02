@@ -1,6 +1,6 @@
 import deep
 import pickle
-import deep.convnet,deep.autoconv 
+import deep.convnet
 
 class NNReader(object):
     def __init__(self,preproc=None):
@@ -8,10 +8,8 @@ class NNReader(object):
             self.preproc=deep.tools.ImgPreproc(preproc)
         else:    
             self.preproc=preproc
-        self.types = {'Convet':deep.convnet.compile_convnet,
-                      'ConvAutoencoder': deep.autoconv.compile_conv_ae}
-#                      'LSTM':deep.lstm.compile_lstm}
-
+        self.types = {'Convet':deep.convnet.compile_convnet}
+        
     def __call__(self,in_path, drop_p=0.0,get_hyper=False):
         model=self.__unpickle__(in_path) 
         model.hyperparams['p']=drop_p

@@ -6,11 +6,10 @@ import theano.tensor as T
 from lasagne.regularization import regularize_layer_params, l2, l1
 
 class Convet(deep.NeuralNetwork):
-    def __init__(self,hyperparams,out_layer,preproc,
+    def __init__(self,hyperparams,out_layer,
                      in_var,target_var,
                      features_pred,pred,loss,updates):
         super(Convet,self).__init__(hyperparams,out_layer)
-        self.preproc=preproc
         self.in_var=in_var
         self.target_var=target_var
         self.__features__=theano.function([in_var],features_pred)
@@ -29,17 +28,14 @@ class Convet(deep.NeuralNetwork):
         return np.argmax(dist)
 
     def get_distribution(self,x):
-        if(len(x.shape)!=4):
-            img4D=self.preproc.apply(x)
-        else:
-            img4D=x
-        img_x=self.pred(img4D).flatten()
+        x=np.expand_dims(x,0)
+        img_x=self.pred(x).flatten()
         return img_x
 
     def dim(self):
         return self.hyperparams['n_hidden']
 
-def compile_convnet(params,preproc):
+def compile_convnet(params):
     in_layer,out_layer,hid_layer,all_layers=build_model(params)
     target_var = T.ivector('targets')
     features_pred = lasagne.layers.get_output(hid_layer)
@@ -49,7 +45,7 @@ def compile_convnet(params,preproc):
     l1_reg=params['l1_reg']
     loss=get_loss(pred,in_var,target_var,all_layers,l1_reg)
     updates=get_updates(loss,out_layer)
-    return Convet(params,out_layer,preproc,
+    return Convet(params,out_layer,
                   in_var,target_var,
                   features_pred,pred,loss,updates)
 
@@ -60,7 +56,7 @@ def build_model(params):
     filter_size2D=params["filter_size"]
     pool_size2D=params["pool_size"]
     p_drop=params["p"]
-    n_cats=params['n_cats']
+    n_cats=27#params['n_cats']
     n_hidden=params.get('n_hidden',100) 
 
     in_layer = lasagne.layers.InputLayer(
@@ -111,18 +107,17 @@ def get_updates(loss,out_layer):
     return updates
 
 def default_params():
-    return {"input_shape":(None,2,64,64),"num_filters":16,"n_hidden":100,
-              "filter_size":(5,5),"pool_size":(4,4),"p":0.5, "l1_reg":0.001}
+    return {"input_shape":(None,1,128,10),"num_filters":8,"n_hidden":100,
+              "filter_size":(4,1),"pool_size":(2,1),"p":0.5, "l1_reg":0.001}
 
-def get_model(n_cats,preproc,nn_path=None, params=None,l1_reg=True,model_p=0.5):
-    if(nn_path is None):
-        if(params==None):
-            params=default_params()
-        old_shape=params['input_shape']
-        params['input_shape']=(old_shape[0],preproc.dim,old_shape[2],old_shape[3])
-        params['n_cats']= n_cats#data.get_n_cats(y)
-        return compile_convnet(params,preproc)
-    else:  
-        nn_reader=deep.reader.NNReader(preproc)
-        return nn_reader(nn_path,model_p)
-        
+#def get_model(n_cats,preproc,nn_path=None, params=None,l1_reg=True,model_p=0.5):
+#    if(nn_path is None):
+#        if(params==None):
+#            params=default_params()
+#        old_shape=params['input_shape']
+#        params['input_shape']=(old_shape[0],preproc.dim,old_shape[2],old_shape[3])
+#        params['n_cats']= n_cats#data.get_n_cats(y)
+#        return compile_convnet(params,preproc)
+#    else:  
+#        nn_reader=deep.reader.NNReader(preproc)
+#        return nn_reader(nn_path,model_p)        
