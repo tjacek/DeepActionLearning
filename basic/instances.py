@@ -46,12 +46,7 @@ class InstsGroup(object):
     def split(self, selector=None):
         if(selector is None):
             selector= lambda inst_i: (inst_i.person % 2)==1
-        train,test=[],[]
-        for inst_i in self.instances.values():       
-            if(selector(inst_i)):
-                train.append(inst_i)
-            else:
-                test.append(inst_i)
+        train,test= utils.split(self.raw(),selector)
         return InstsGroup(train),InstsGroup(test)
 
 class Instance(object):

@@ -22,6 +22,15 @@ def bottom_dirs(path):
     all_paths.sort(key=natural_keys) 
     return all_paths
 
+def split(actions,selector):
+    train,test=[],[]
+    for action_i in actions:
+        if(selector(action_i)):
+            train.append(action_i)
+        else:
+            test.append(action_i)
+    return train,test
+
 def atoi(text):
     return int(text) if text.isdigit() else text
 
