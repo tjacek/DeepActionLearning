@@ -3,17 +3,22 @@ import seq.io,utils
 import deep.convnet
 from sklearn.metrics import classification_report
 
-def make_dataset(in_path):
+def make_dataset(in_path,nn_path=None):
     read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
     actions=read_actions(in_path)
     train,test=utils.split(actions,lambda action_i: (action_i.person % 2)==1)
     X_train,y_train=as_dataset(train)
-    model=deep.convnet.compile_convnet(deep.convnet.default_params())
+    n_cats=np.unique(y_train).shape[0]
+    params=deep.convnet.default_params()
+    params['n_cats']=n_cats
+    model=deep.convnet.compile_convnet(params)
     print(X_train.shape)
     model=train_super_model(X_train,y_train,model)
     X_test,y_test=as_dataset(test)
     y_pred=[model.get_category(x_i) for x_i in X_test]
     print(classification_report(y_test, y_pred,digits=4))
+    if(nn_path):
+        model.get_model().save(nn_path)
 
 def as_dataset(actions):
     X=np.array([np.expand_dims(action_i.as_array(),0) 

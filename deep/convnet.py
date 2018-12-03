@@ -19,9 +19,9 @@ class Convet(deep.NeuralNetwork):
                                updates=updates,allow_input_downcast=True)
 
     def __call__(self,in_img):
-        img3D=self.preproc(in_img)
-        img4D=np.expand_dims(img3D,0)
-        return self.__features__(img4D).flatten()
+        in_img=np.expand_dims(in_img,0)
+        in_img=np.expand_dims(in_img,0)
+        return self.__features__(in_img).flatten()
     
     def get_category(self,img):
         dist=self.get_distribution(img)
@@ -52,23 +52,24 @@ def compile_convnet(params):
 def build_model(params):
     print(params)
     input_shape=params["input_shape"]
-    n_filters=params["num_filters"]
+    n1_filters=params["n1_filters"]
+    n2_filters=params["n2_filters"]
     filter_size2D=params["filter_size"]
     pool_size2D=params["pool_size"]
     p_drop=params["p"]
-    n_cats=27#params['n_cats']
+    n_cats=params['n_cats']
     n_hidden=params.get('n_hidden',100) 
 
     in_layer = lasagne.layers.InputLayer(
                shape=input_shape)
                #input_var=input_var)
     conv_layer1 = lasagne.layers.Conv2DLayer(
-            in_layer, num_filters=n_filters, filter_size=filter_size2D,
+            in_layer, num_filters=n1_filters, filter_size=filter_size2D,
             nonlinearity=lasagne.nonlinearities.rectify,
             W=lasagne.init.GlorotUniform())
     pool_layer1 = lasagne.layers.MaxPool2DLayer(conv_layer1, pool_size=pool_size2D)
     conv_layer2 = lasagne.layers.Conv2DLayer(
-            pool_layer1, num_filters=n_filters, filter_size=filter_size2D,
+            pool_layer1, num_filters=n2_filters, filter_size=filter_size2D,
             nonlinearity=lasagne.nonlinearities.rectify)
     pool_layer2 = lasagne.layers.MaxPool2DLayer(conv_layer2, pool_size=pool_size2D)
     dropout = lasagne.layers.DenseLayer(
@@ -107,8 +108,8 @@ def get_updates(loss,out_layer):
     return updates
 
 def default_params():
-    return {"input_shape":(None,1,128,10),"num_filters":8,"n_hidden":100,
-              "filter_size":(4,1),"pool_size":(2,1),"p":0.5, "l1_reg":0.001}
+    return {"input_shape":(None,1,128,12),"n1_filters":8,"n2_filters":8,"n_hidden":100,
+              "filter_size":(7,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
 
 #def get_model(n_cats,preproc,nn_path=None, params=None,l1_reg=True,model_p=0.5):
 #    if(nn_path is None):
