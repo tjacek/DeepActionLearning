@@ -38,11 +38,35 @@ class SamplingAgum(object):
         self.seq_size=seq_size
 
     def __call__(self,feat_i):
-        #start,end=feat_i[:self.seq_size],feat_i[self.seq_size:]
-        #start_i=CubicSpline(self.seq_size*2,start)
-        #agum=np.concatenate([start_i,end])
-        #agum=CubicSpline(self.max_size,agum)
-        return [feat_i]
+        new_sizes=[2*self.seq_size,self.seq_size/2]
+        sides=[True,False]
+        agum_seqs=[]
+        for size_j in new_sizes: 
+            for side_i in sides:
+            	agum_seqs.append(warp_seq(feat_i,size_j,self.seq_size,side_i))
+        agum_seqs=[interpolate(self.max_size,agum_i) for agum_i in agum_seqs]
+        return agum_seqs
+
+def warp_seq(feat_i,new_size,warp_size,side=True):
+    print(feat_i.shape)
+    start,end=feat_i[:warp_size],feat_i[warp_size:]
+    if(side):        
+        start=interpolate(new_size,start)
+    else: 
+        end=interpolate(new_size,end)
+    return np.concatenate([start,end])
+
+def interpolate(new_size,feat_i):
+    old_x=get_x(feat_i.shape[0])
+    cs=CubicSpline(old_x,feat_i)
+    new_x=get_x(new_size)
+    return cs(new_x)
+
+def get_x(n):
+    x=np.arange(n)
+    x=x.astype(float)
+    x/=float(n)
+    return x
 
 agum=Agumentation(SamplingAgum())
 agum('datasets2/up_full','datasets2/agum')
