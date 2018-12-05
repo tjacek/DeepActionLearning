@@ -3,11 +3,12 @@ import seq,utils
 import cv2,os
 
 class ActionReader(object):
-    def __init__(self,read_dirs,read_seq,as_dict=False):
+    def __init__(self,read_dirs,read_seq,as_dict=False,as_group=False):
         self.as_dict=as_dict
         self.get_action_desc=cp_dataset
         self.get_action_paths=read_dirs
-        self.read_seq=read_seq  	
+        self.read_seq=read_seq
+        self.as_group=as_group  	
     
     def __call__(self,action_dir):
         action_paths=self.get_action_paths(action_dir)
@@ -18,6 +19,8 @@ class ActionReader(object):
             raise Exception("No actions found at " + str(action_dir))
         if(self.as_dict):
             actions=as_action_dict(actions)
+        if(self.as_group):
+            actions=seq.ActionGroup(actions)
         return actions
 
     def parse_action(self,action_path):
@@ -49,14 +52,14 @@ def transform_actions(in_path,out_path,transform,
     save_actions=ActionWriter(img_seq=img_out)
     save_actions(new_actions,out_path)
 
-def build_action_reader(img_seq,as_dict=True):
+def build_action_reader(img_seq,as_dict=True,as_group=False):
     if(img_seq):
         read_dirs=utils.bottom_dirs
         read_seq=read_img_action
     else:
         read_dirs=utils.bottom_files
         read_seq=read_text_action
-    return ActionReader(read_dirs,read_seq,as_dict)
+    return ActionReader(read_dirs,read_seq,as_dict,as_group)
 
 def as_action_dict(actions):
     return { action_i.name:action_i for action_i in actions} 

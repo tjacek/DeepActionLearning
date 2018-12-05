@@ -1,6 +1,21 @@
 import numpy as np 
 import utils
 
+class ActionGroup(object):
+    def __init__(self, actions):
+        self.actions = actions
+    
+    def __len__(self):
+        return len(self.actions)
+
+    def __getitem__(self, key):
+        return self.actions[key]
+    
+    def select(self,selector=None):
+        if(not selector):
+            selector=lambda action_i:(action_i.person % 2)==1
+        return utils.split(self.actions,selector)
+
 class Action(object):
     def __init__(self,img_seq,name,cat,person):
         self.img_seq=img_seq
