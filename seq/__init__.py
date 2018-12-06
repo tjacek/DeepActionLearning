@@ -15,6 +15,22 @@ class ActionGroup(object):
         if(not selector):
             selector=lambda action_i:(action_i.person % 2)==1
         return utils.split(self.actions,selector)
+    
+    def normalization(self):
+        feats=self.as_array()
+        mean_feats=np.mean(feats,axis=0)
+        std_feats=np.std(feats,axis=0)
+        for action_i in self.actions:
+            img_seq_i=action_i.as_array()
+            img_seq_i-=mean_feats
+            img_seq_i/=std_feats
+            action_i.img_seq=list(img_seq_i)
+
+    def as_array(self):
+        feats=[]
+        for action_i in self.actions:
+            feats+=action_i.img_seq
+        return np.array(feats)
 
 class Action(object):
     def __init__(self,img_seq,name,cat,person):
