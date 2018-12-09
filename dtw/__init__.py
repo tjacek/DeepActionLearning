@@ -10,7 +10,7 @@ def dtw_basic(s,t):
             dtw[i][j]=cost+min([dtw[i-1][j],dtw[i][j-1],dtw[i-1][j-1]])
     return np.sqrt(dtw[n][m])
 
-def dtw_optim(s,t,w=10):
+def dtw_optim(s,t,w=50):
     dtw,n,m=prepare_matrix(s,t)
     w=max(w,np.abs(n-m))
     for i in range(1,n+1):
@@ -18,7 +18,7 @@ def dtw_optim(s,t,w=10):
         for j in range(start_i,end_i):
             t_i,t_j=s[i-1],t[j-1]
             diff=t_i-t_j
-            cost=np.dot(diff,diff) #np.sum((t_i-t_j)**2)   
+            cost= np.dot(diff,diff) #np.sum((t_i-t_j)**2)   
             dtw[i][j]=cost+min([dtw[i-1][j],dtw[i][j-1],dtw[i-1][j-1]])
     return np.sqrt(dtw[n][m])
 
