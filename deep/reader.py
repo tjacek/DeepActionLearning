@@ -4,17 +4,13 @@ import deep.convnet
 
 class NNReader(object):
     def __init__(self,preproc=None):
-        if(type(preproc)==int):
-            self.preproc=deep.tools.ImgPreproc(preproc)
-        else:    
-            self.preproc=preproc
         self.types = {'Convet':deep.convnet.compile_convnet}
         
     def __call__(self,in_path, drop_p=0.0,get_hyper=False):
         model=self.__unpickle__(in_path) 
         model.hyperparams['p']=drop_p
         type_reader=self.types[model.type_name]
-        neural_net=type_reader(model.hyperparams,self.preproc)
+        neural_net=type_reader(model.hyperparams)
         neural_net.set_model(model)
         if(get_hyper):
             return neural_net,model.hyperparams

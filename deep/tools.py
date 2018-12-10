@@ -12,17 +12,22 @@ def deep_features(in_path,nn_path,out_path):
     deep_feats=basic.extr.Extractor(conv_helper,feat_fun=False)
     deep_feats(in_path,out_path)	
 
-def make_dataset(in_path,nn_path=None):
+def train_model(in_path,nn_path=None):
+    X_train,y_train,X_test,y_test=load_data(in_path)
+    print(X_train.shape)
+    model=make_model(y_train)
+    model=deep.train.train_super_model(X_train,y_train,model)
+    verify_model(y_test,X_test,model)
+    if(nn_path):
+        model.get_model().save(nn_path)
+
+def load_data(in_path):
     read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
     actions=read_actions(in_path)
     train,test=utils.split(actions,lambda action_i: (action_i.person % 2)==1)
     X_train,y_train=as_dataset(train)
     X_test,y_test=as_dataset(test)
-    model=make_model(y_train)
-    model=deep.train.train_super_model(X_train,y_train,model)
-    verify_model(y_test,model)
-    if(nn_path):
-        model.get_model().save(nn_path)
+    return X_train,y_train,X_test,y_test
 
 def as_dataset(actions):
     X=np.array([np.expand_dims(action_i.as_array(),0) 
@@ -36,6 +41,12 @@ def make_model(y):
     params['n_cats']=n_cats
     return deep.convnet.compile_convnet(params)
 
-def verify_model(y_test,model):
+def test_model(data_path,nn_path):
+    X_train,y_train,X_test,y_test=load_data(data_path)
+    nn_reader=deep.reader.NNReader()
+    conv=nn_reader(nn_path)
+    verify_model(y_test,X_test,conv)
+
+def verify_model(y_test,X_test,model):
     y_pred=[model.get_category(x_i) for x_i in X_test]
     print(classification_report(y_test, y_pred,digits=4))

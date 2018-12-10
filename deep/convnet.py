@@ -109,7 +109,7 @@ def get_updates(loss,out_layer):
 
 def default_params():
     return {"input_shape":(None,1,128,12),"n1_filters":8,"n2_filters":8,"n_hidden":100,
-              "filter_size":(7,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
+              "filter_size":(8,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
 
 #def get_model(n_cats,preproc,nn_path=None, params=None,l1_reg=True,model_p=0.5):
 #    if(nn_path is None):
