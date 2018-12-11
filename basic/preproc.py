@@ -3,7 +3,9 @@ import seq.io
 import instances
 
 class Preproc(object):
-    def __init__(self,preproc_fun):
+    def __init__(self,preproc_fun=None):
+        if(not preproc_fun):
+            preproc_fun=z_norm
         self.preproc_fun=preproc_fun
         
     def __call__(self,in_path,out_path):
@@ -18,3 +20,10 @@ class Preproc(object):
                         for action_i in actions]
         save_actions=seq.io.ActionWriter(False)
         save_actions(actions,out_path)
+
+def z_norm(feat_i):
+    mean_i= np.mean(feat_i)
+    std_i=  np.std(feat_i)
+    feat_i-=mean_i
+    feat_i/=std_i
+    return feat_i
