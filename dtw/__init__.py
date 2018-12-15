@@ -22,6 +22,13 @@ def dtw_optim(s,t,w=50):
             dtw[i][j]=cost+min([dtw[i-1][j],dtw[i][j-1],dtw[i-1][j-1]])
     return np.sqrt(dtw[n][m])
 
+def dtw_indep(s,t):
+    dtw,n,m=prepare_matrix(s,t)
+    n_dim=s.shape[1]
+    all_series=[(s[:,i],t[:,i]) for i in range(n_dim)]
+    dtw_dist=[dtw_basic(s_i,t_i) for s_i,t_i in all_series]
+    return np.sum(dtw_dist)
+
 def prepare_matrix(s,t):
     n=len(s)
     m=len(t)
@@ -32,10 +39,5 @@ def prepare_matrix(s,t):
         cost_matrix[0][i]=np.inf
     return cost_matrix,n,m    
 
-def d1(v,d):
-    return np.linalg.norm(v-d)
-
-def d2(v,u):
-    dist=np.dot(u,v)
-    dist/=np.linalg.norm(v) * np.linalg.norm(u)
-    return dist
+#def idep_series(s,t):
+#    [(s_i,t_i)  for s_i,t_i in zip(s,t)]
