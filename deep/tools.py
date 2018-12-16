@@ -4,6 +4,18 @@ import seq.io,utils
 import basic.extr
 import deep.reader,deep.train
 
+def person_models(in_path,out_path,num_iter=10):
+    X_train,y_train,X_test,y_test=load_data(in_path)
+    X,y=X_train,X_train.person
+    person_ids=np.unique(y)
+    n_persons=person_ids.shape[0]
+    for person_i in range(n_persons):
+        y_i=binarize(y,person_i)
+        model_i=make_model(y_i)
+        model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)
+        out_i=out_path+'/person' + person_ids[person_i]
+        model.get_model().save(out_i)
+
 def deep_features(in_path,nn_path,out_path):
     nn_reader=deep.reader.NNReader()
     conv=nn_reader(nn_path)
@@ -50,3 +62,7 @@ def test_model(data_path,nn_path):
 def verify_model(y_test,X_test,model):
     y_pred=[model.get_category(x_i) for x_i in X_test]
     print(classification_report(y_test, y_pred,digits=4))
+
+def binarize(y,cat_j):
+    return [ 0 if(y_i==cat_j) else 1
+               for y_i in y]
