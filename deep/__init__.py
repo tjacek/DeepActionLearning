@@ -35,3 +35,8 @@ class Model(object):
         print(type(param_shape))
         print(param_shape)
         self.params.append(np.ones(param_shape))
+
+def make_model(y,get_params):
+    n_cats=np.unique(y).shape[0]
+    params= get_params(n_cats)#deep.convnet.default_params()
+    return deep.convnet.compile_convnet(params)

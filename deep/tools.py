@@ -34,7 +34,7 @@ def train_model(in_path,nn_path=None):
         model.get_model().save(nn_path)
 
 def load_data(in_path):
-    read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
+    read_actions=seq.io.build_action_reader(img_seq=True,as_dict=False)
     actions=read_actions(in_path)
     train,test=utils.split(actions,lambda action_i: (action_i.person % 2)==1)
     X_train,y_train=as_dataset(train)
@@ -46,12 +46,6 @@ def as_dataset(actions):
                     for action_i in actions])
     y=[action_i.cat-1 for action_i in actions]
     return X,y
-
-def make_model(y):
-    n_cats=np.unique(y).shape[0]
-    params=deep.convnet.default_params()
-    params['n_cats']=n_cats
-    return deep.convnet.compile_convnet(params)
 
 def test_model(data_path,nn_path):
     X_train,y_train,X_test,y_test=load_data(data_path)

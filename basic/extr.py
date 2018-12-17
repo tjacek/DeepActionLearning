@@ -1,5 +1,5 @@
 import seq.io
-import instances
+import basic.instances
 
 class Extractor(object):
     def __init__(self,get_feats, feat_fun=True):
@@ -12,9 +12,9 @@ class Extractor(object):
         def action_helper(action_i):
             cat,person,name=action_i.cat,action_i.person,action_i.name
             data=self.get_data(action_i)
-            return instances.Instance(data,cat,person,name)
-        insts=instances.InstsGroup([ action_helper(action_i) 
-        	                            for action_i in actions])
+            return basic.instances.Instance(data,cat,person,name)
+        insts=basic.instances.InstsGroup([ action_helper(action_i) 
+        	                                for action_i in actions])
         insts.to_txt(out_path)
     
     def get_data(self,action_i):

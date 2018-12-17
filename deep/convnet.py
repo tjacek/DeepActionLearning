@@ -107,18 +107,12 @@ def get_updates(loss,out_layer):
             loss, params, learning_rate=0.001, momentum=0.9)
     return updates
 
-def default_params():
-    return {"input_shape":(None,1,128,12),"n1_filters":8,"n2_filters":8,"n_hidden":100,
-              "filter_size":(8,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
+def ts_network_params(n_cats):
+    return {"input_shape":(None,1,128,12),"n_cats":n_cats,
+            "n1_filters":8,"n2_filters":8,"n_hidden":100,
+            "filter_size":(8,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
 
-#def get_model(n_cats,preproc,nn_path=None, params=None,l1_reg=True,model_p=0.5):
-#    if(nn_path is None):
-#        if(params==None):
-#            params=default_params()
-#        old_shape=params['input_shape']
-#        params['input_shape']=(old_shape[0],preproc.dim,old_shape[2],old_shape[3])
-#        params['n_cats']= n_cats#data.get_n_cats(y)
-#        return compile_convnet(params,preproc)
-#    else:  
-#        nn_reader=deep.reader.NNReader(preproc)
-#        return nn_reader(nn_path,model_p)        
+def frame_network_params(n_cats):
+    return {"input_shape":(None,1,128,12),"n_cats":n_cats,
+            "n1_filters":16,"n2_filters":16,"n_hidden":100,
+            "filter_size":(5,5),"pool_size":(4,4),"p":0.5, "l1_reg":0.001}
