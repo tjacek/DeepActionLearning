@@ -39,15 +39,23 @@ def load_data(in_path):
     read_actions=seq.io.build_action_reader(img_seq=True,as_dict=False)
     actions=read_actions(in_path)
     train,test=utils.split(actions,lambda action_i: (action_i.person % 2)==1)
-    X_train,y_train=as_dataset(train)
-    X_test,y_test=as_dataset(test)
+    X_train,y_train=frame_dataset(train)
+    X_test,y_test=frame_dataset(test)
     return X_train,y_train,X_test,y_test
 
-def as_dataset(actions):
-    X=np.array([np.expand_dims(action_i.as_array(),0) 
-                    for action_i in actions])
-    y=[action_i.cat-1 for action_i in actions]
-    return X,y
+def frame_dataset(actions):
+    frames=[]
+    for action_i in actions:
+        frames+=action_i.as_pairs()
+    y=[frame_i[0] for frame_i in frames] 
+    X=[frame_i[1] for frame_i in frames]
+    return X,y    
+
+#def as_dataset(actions):
+#    X=np.array([np.expand_dims(action_i.as_array(),0) 
+#                    for action_i in actions])
+#    y=[action_i.cat-1 for action_i in actions]
+#    return X,y
 
 def test_model(data_path,nn_path):
     X_train,y_train,X_test,y_test=load_data(data_path)
