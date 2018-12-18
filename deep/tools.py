@@ -2,13 +2,15 @@ import numpy as np
 from sklearn.metrics import classification_report
 import seq.io,utils
 import basic.extr
-import deep.reader,deep.train
+import deep.reader,deep.train,deep.convnet
 
-def person_models(in_path,out_path,num_iter=10):
+def person_models(in_path,out_path,num_iter=10,n_frames=4):
     X_train,y_train,X_test,y_test=load_data(in_path)
     X,y=X_train,X_train.person
     person_ids=np.unique(y)
     n_persons=person_ids.shape[0]
+    frame_preproc=deep.convnet.FramePreproc(n_frames)
+    X=frame_preproc(X)
     for person_i in range(n_persons):
         y_i=binarize(y,person_i)
         model_i=make_model(y_i)
