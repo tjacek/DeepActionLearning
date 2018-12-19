@@ -115,12 +115,3 @@ def frame_network_params(n_cats):
     return {"input_shape":(None,1,128,12),"n_cats":n_cats,
             "n1_filters":16,"n2_filters":16,"n_hidden":100,
             "filter_size":(5,5),"pool_size":(4,4),"p":0.5, "l1_reg":0.001}
-
-class FramePreproc(object):
-    def __init__(self,dim):
-        self.dim=dim
-
-    def __call__(self,X):
-        X=[np.vsplit(x_i,self.dim) for x_i in X]
-        X=[np.stack(x_i,self.dim) for x_i in X]
-        return np.array(X)

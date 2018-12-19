@@ -2,9 +2,10 @@ import numpy as np
 from sklearn.metrics import classification_report
 import seq.io,utils
 import basic.extr
-import deep.reader,deep.train,deep.convnet
+import deep.reader,deep.train,deep.convnet,deep.preproc
 
 def person_models(in_path,out_path,num_iter=10,n_frames=4):
+    load_data=deep.preproc.LoadData(deep.preproc.person_frames)
     X_train,y_train,X_test,y_test=load_data(in_path)
     X,y=X_train,X_train.person
     person_ids=np.unique(y)
@@ -34,22 +35,6 @@ def train_model(in_path,nn_path=None):
     verify_model(y_test,X_test,model)
     if(nn_path):
         model.get_model().save(nn_path)
-
-def load_data(in_path):
-    read_actions=seq.io.build_action_reader(img_seq=True,as_dict=False)
-    actions=read_actions(in_path)
-    train,test=utils.split(actions,lambda action_i: (action_i.person % 2)==1)
-    X_train,y_train=frame_dataset(train)
-    X_test,y_test=frame_dataset(test)
-    return X_train,y_train,X_test,y_test
-
-def frame_dataset(actions):
-    frames=[]
-    for action_i in actions:
-        frames+=action_i.as_pairs()
-    y=[frame_i[0] for frame_i in frames] 
-    X=[frame_i[1] for frame_i in frames]
-    return X,y    
 
 #def as_dataset(actions):
 #    X=np.array([np.expand_dims(action_i.as_array(),0) 
