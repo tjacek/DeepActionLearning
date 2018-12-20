@@ -7,14 +7,15 @@ import deep.reader,deep.train,deep.convnet,deep.preproc
 def person_models(in_path,out_path,num_iter=10,n_frames=4):
     load_data=deep.preproc.LoadData(deep.preproc.person_frames)
     X_train,y_train,X_test,y_test=load_data(in_path)
-    X,y=X_train,X_train.person
+    X,y=X_train,y_train
     person_ids=np.unique(y)
+    print(person_ids)
     n_persons=person_ids.shape[0]
-    frame_preproc=deep.convnet.FramePreproc(n_frames)
+    frame_preproc=deep.preproc.FramePreproc(n_frames)
     X=frame_preproc(X)
     for person_i in range(n_persons):
         y_i=binarize(y,person_i)
-        model_i=make_model(y_i)
+        model_i=make_model(y_i,"frame")
         model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)
         out_i=out_path+'/person' + person_ids[person_i]
         model.get_model().save(out_i)

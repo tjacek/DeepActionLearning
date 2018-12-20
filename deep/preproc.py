@@ -7,7 +7,7 @@ class FramePreproc(object):
 
     def __call__(self,X):
         X=[np.vsplit(x_i,self.dim) for x_i in X]
-        X=[np.stack(x_i,self.dim) for x_i in X]
+        X=[np.stack(x_i,0) for x_i in X]
         return np.array(X)
 
 class LoadData(object):
