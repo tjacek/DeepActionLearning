@@ -13,7 +13,8 @@ def person_models(in_path,out_path,num_iter=10,n_frames=4):
     n_persons=person_ids.shape[0]
     frame_preproc=deep.preproc.FramePreproc(n_frames)
     X=frame_preproc(X)
-    for person_i in range(n_persons):
+    for i in range(n_persons):
+        person_i=person_ids[i]
         y_i=binarize(y,person_i)
         model_i=make_model(y_i,"frame")
         model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)

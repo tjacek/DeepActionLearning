@@ -1,5 +1,5 @@
 import numpy as np
-import utils
+import utils,seq.io
 
 class FramePreproc(object):
     def __init__(self,dim):
