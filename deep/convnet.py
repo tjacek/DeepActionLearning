@@ -108,7 +108,7 @@ def get_updates(loss,out_layer):
 
 def make_model(y,get_params):
     n_cats=np.unique(y).shape[0]
-    if(get_params="frame"):
+    if(get_params=="frame"):
         params=frame_network_params(n_cats)
     else:    
         params= get_params(n_cats)#deep.convnet.default_params()
@@ -120,6 +120,6 @@ def ts_network_params(n_cats):
             "filter_size":(8,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
 
 def frame_network_params(n_cats):
-    return {"input_shape":(None,1,128,12),"n_cats":n_cats,
+    return {"input_shape":(None,4,64,64),"n_cats":n_cats,
             "n1_filters":16,"n2_filters":16,"n_hidden":100,
             "filter_size":(5,5),"pool_size":(4,4),"p":0.5, "l1_reg":0.001}
