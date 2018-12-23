@@ -3,13 +3,14 @@ import seq,utils
 import cv2,os
 
 class ActionReader(object):
-    def __init__(self,read_dirs,read_seq,as_dict=False,as_group=False):
+    def __init__(self,read_dirs,read_seq,as_dict=False,as_group=False,norm=255):
         self.as_dict=as_dict
         self.get_action_desc=cp_dataset
         self.get_action_paths=read_dirs
         self.read_seq=read_seq
         self.as_group=as_group  	
-    
+        self.norm=norm
+
     def __call__(self,action_dir):
         action_paths=self.get_action_paths(action_dir)
         print(self.get_action_paths)
@@ -26,6 +27,10 @@ class ActionReader(object):
     def parse_action(self,action_path):
         name,cat,person=self.get_action_desc(action_path)       
         img_seq= self.read_seq(action_path) #read_text_action(action_path)
+        if(self.img_seq)
+            img_seq=np.array(img_seq)
+            img_seq=img_seq.astype(float)
+            img_seq/=self.norm
         print(name)
         return seq.Action(img_seq,name,cat,person)
 
@@ -43,6 +48,13 @@ class ActionWriter(object):
         for action_i in actions:
             action_path=out_path+'/'+action_i.name
             self.save_action(action_i,action_path)
+
+def normalize(in_path,out_path):
+    read_actions=build_action_reader(img_seq=False,as_dict=False,as_group=True)
+    actions=read_actions(in_path)
+    actions.normalization()
+    save_actions=ActionWriter(img_seq=False)
+    save_actions(actions.raw(),out_path)
 
 def transform_actions(in_path,out_path,transform,
                       img_in=True,img_out=False,whole_seq=False):
@@ -82,7 +94,7 @@ def as_text(action_i,out_path):
             for frame_i in action_i.img_seq]
     text="\n".join(lines)
     utils.save_string(out_path,text)
-
+    
 def as_imgs(action_i,action_path):
     print(action_path)
     utils.make_dir(action_path)

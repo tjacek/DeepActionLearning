@@ -11,10 +11,18 @@ class ActionGroup(object):
     def __getitem__(self, key):
         return self.actions[key]
     
-    def select(self,selector=None):
+    def raw(self):
+        if(type(self.actions)==dict):
+            return self.actions.values()
+        return self.actions
+
+    def select(self,selector=None,as_group=False):
         if(not selector):
             selector=lambda action_i:(action_i.person % 2)==1
-        return utils.split(self.actions,selector)
+        train,test=utils.split(self.actions,selector)
+        if(as_group):
+            return ActionGroup(train),ActionGroup(test)
+        return train,test
     
     def normalization(self):
         feats=self.as_array()
@@ -69,9 +77,9 @@ class Action(object):
         action_array=self.as_array().T
         return [ feature_i for feature_i in action_array]
 
-    def as_pairs(self,norm=255.0):
-        norm_imgs=[ (img_i/norm) 
-                    for img_i in self.img_seq]
+    def as_pairs(self):#,norm=255.0):
+        #norm_imgs=[ (img_i/norm) 
+        #            for img_i in self.img_seq]
         return [ (self.cat,img_i) for img_i in norm_imgs]
 
 def by_cat(actions):
@@ -87,4 +95,4 @@ def person_rep(actions):
         action_id=str(action_i.cat)+str(action_i.person)
         if(not action_id in reps):
             reps[action_id]=action_i
-    return reps.values()   
+    return reps.values()
