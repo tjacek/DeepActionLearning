@@ -1,20 +1,17 @@
 import numpy as np
 import seq,utils
-import cv2,os
+import cv2,os,gc
 
 class ActionReader(object):
-    def __init__(self,read_dirs,read_seq,as_dict=False,as_group=False,norm=255):
+    def __init__(self,seq_type,as_dict=False,as_group=False):
         self.as_dict=as_dict
-        self.get_action_desc=cp_dataset
-        self.get_action_paths=read_dirs
-        self.read_seq=read_seq
+        self.seq_type=seq_type
         self.as_group=as_group  	
-        self.norm=norm
 
     def __call__(self,action_dir):
-        action_paths=self.get_action_paths(action_dir)
+        action_paths=self.seq_type.get_action_paths(action_dir)
         print(self.get_action_paths)
-        actions=[self.parse_action(action_path_i) 
+        actions=[self.seq_type.parse_action(action_path_i) 
                    for action_path_i in action_paths]
         if(not actions):
             raise Exception("No actions found at " + str(action_dir))
@@ -23,16 +20,6 @@ class ActionReader(object):
         if(self.as_group):
             actions=seq.ActionGroup(actions)
         return actions
-
-    def parse_action(self,action_path):
-        name,cat,person=self.get_action_desc(action_path)       
-        img_seq= self.read_seq(action_path) #read_text_action(action_path)
-        if(self.img_seq)
-            img_seq=np.array(img_seq)
-            img_seq=img_seq.astype(float)
-            img_seq/=self.norm
-        print(name)
-        return seq.Action(img_seq,name,cat,person)
 
 class ActionWriter(object):
     def __init__(self,img_seq=False):
@@ -48,6 +35,25 @@ class ActionWriter(object):
         for action_i in actions:
             action_path=out_path+'/'+action_i.name
             self.save_action(action_i,action_path)
+
+class SeqType(object):
+    def __init__(self,img_seq,read_dirs,read_seq,norm=255.0):
+        self.img_seq=img_seq
+        self.get_action_desc=cp_dataset
+        self.get_action_paths=read_dirs
+        self.read_seq=read_seq
+        self.norm=norm
+
+    def parse_action(self,action_path):   
+        name,cat,person,self.get_action_desc(action_path)
+        img_seq= self.read_seq(action_path) #read_text_action(action_path)
+        if(self.img_seq)
+            img_seq=np.array(img_seq)
+            img_seq=img_seq.astype(float)
+            img_seq/=self.norm
+            gc.collect()
+        print(name)
+        return seq.Action(img_seq,name,cat,person)
 
 def normalize(in_path,out_path):
     read_actions=build_action_reader(img_seq=False,as_dict=False,as_group=True)
@@ -71,7 +77,8 @@ def build_action_reader(img_seq,as_dict=True,as_group=False):
     else:
         read_dirs=utils.bottom_files
         read_seq=read_text_action
-    return ActionReader(read_dirs,read_seq,as_dict,as_group)
+    seq_type=SeqType(img_seq,read_dirs,read_seq)
+    return ActionReader(seq_type,as_dict,as_group)
 
 def as_action_dict(actions):
     return { action_i.name:action_i for action_i in actions} 
