@@ -20,4 +20,5 @@ def get_actions(in_path):
     read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False,as_group=True)
     return read_actions(in_path)
 
-show_scale("../wrap/mhad/basic/data")
+if __name__ == "__main__":
+    show_norm("../wrap/mra_preproc/all")#mra/basic/data")
