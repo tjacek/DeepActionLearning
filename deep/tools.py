@@ -31,12 +31,7 @@ def build_deep_extractor(nn_path,cat_feat=False):
             return [dist_i[0]]
     else:
         conv_helper=lambda action_i:conv(action_i.as_array())
-    return basic.extr.Extractor(conv_helper,feat_fun=False,,img_seq=True)
-#def deep_features(in_path,nn_path,out_path):
-#    def conv_helper(action_i):
-#        return conv(action_i.as_array())
-#    deep_feats=basic.extr.Extractor(conv_helper,feat_fun=False)
-#    deep_feats(in_path,out_path)	
+    return basic.extr.Extractor(conv_helper,feat_fun=False,img_seq=True)
 
 def train_model(in_path,nn_path=None):
     X_train,y_train,X_test,y_test=load_data(in_path)
