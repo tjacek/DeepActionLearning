@@ -10,7 +10,6 @@ class ActionReader(object):
 
     def __call__(self,action_dir):
         action_paths=self.seq_type.get_action_paths(action_dir)
-        print(self.get_action_paths)
         actions=[self.seq_type.parse_action(action_path_i) 
                    for action_path_i in action_paths]
         if(not actions):
@@ -47,20 +46,13 @@ class SeqType(object):
     def parse_action(self,action_path):   
         name,cat,person,self.get_action_desc(action_path)
         img_seq= self.read_seq(action_path) #read_text_action(action_path)
-        if(self.img_seq):
-            img_seq=np.array(img_seq)
-            img_seq=img_seq.astype(float)
-            img_seq/=self.norm
-            gc.collect()
+        #if(self.img_seq):
+        #    img_seq=np.array(img_seq)
+        #    img_seq=img_seq.astype(float)
+        #    img_seq/=self.norm
+        #    gc.collect()
         print(name)
         return seq.Action(img_seq,name,cat,person)
-
-def normalize(in_path,out_path):
-    read_actions=build_action_reader(img_seq=False,as_dict=False,as_group=True)
-    actions=read_actions(in_path)
-    actions.normalization()
-    save_actions=ActionWriter(img_seq=False)
-    save_actions(actions.raw(),out_path)
 
 def transform_actions(in_path,out_path,transform,
                       img_in=True,img_out=False,whole_seq=False):
