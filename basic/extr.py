@@ -2,12 +2,13 @@ import seq.io
 import basic.instances
 
 class Extractor(object):
-    def __init__(self,get_feats, feat_fun=True):
+    def __init__(self,get_feats, feat_fun=True,img_seq=False):
         self.get_feats=get_feats
         self.feat_fun=feat_fun
+        self.img_seq=img_seq
 
     def __call__(self,in_path,out_path):
-        read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
+        read_actions=seq.io.build_action_reader(img_seq=self.img_seq,as_dict=False)
         actions=read_actions(in_path)
         def action_helper(action_i):
             cat,person,name=action_i.cat,action_i.person,action_i.name
