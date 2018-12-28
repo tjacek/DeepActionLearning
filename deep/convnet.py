@@ -8,7 +8,7 @@ from lasagne.regularization import regularize_layer_params, l2, l1
 class Convet(deep.NeuralNetwork):
     def __init__(self,hyperparams,out_layer,
                      in_var,target_var,
-                     features_pred,pred,loss,updates):
+                     features_pred,pred,loss,updates,preproc=None):
         super(Convet,self).__init__(hyperparams,out_layer)
         self.in_var=in_var
         self.target_var=target_var
@@ -17,6 +17,8 @@ class Convet(deep.NeuralNetwork):
         self.loss=theano.function([in_var,target_var], loss,allow_input_downcast=True)
         self.updates=theano.function([in_var, target_var], loss, 
                                updates=updates,allow_input_downcast=True)
+        self.preproc=preproc
+
     def __call__(self,in_img):
         in_img=np.expand_dims(in_img,0)
         in_img=np.expand_dims(in_img,0)
@@ -27,7 +29,11 @@ class Convet(deep.NeuralNetwork):
         return np.argmax(dist)
 
     def get_distribution(self,x):
-        x=np.expand_dims(x,0)
+        print(type(x))
+        print(x.shape)
+        x=self.preproc(x)
+        print(x.shape)
+#        x=np.expand_dims(x,0)
         img_x=self.pred(x).flatten()
         return img_x
 
@@ -121,5 +127,5 @@ def ts_network_params(n_cats):
 
 def frame_network_params(n_cats):
     return {"input_shape":(None,4,64,64),"n_cats":n_cats,
-            "n1_filters":16,"n2_filters":16,"n_hidden":100,
-            "filter_size":(5,5),"pool_size":(4,4),"p":0.5, "l1_reg":0.001}
+            "n1_filters":16,"n2_filters":16,"n_hidden":100,"filter_size":(5,5),
+            "pool_size":(4,4),"p":0.5, "l1_reg":0.001,"norm":True}

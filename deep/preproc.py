@@ -2,13 +2,16 @@ import numpy as np
 import utils,seq.io
 
 class FramePreproc(object):
-    def __init__(self,dim):
+    def __init__(self,dim,norm=None):
         self.dim=dim
+        self.norm=norm
 
     def __call__(self,X):
         X=[np.vsplit(x_i,self.dim) for x_i in X]
         X=[np.stack(x_i,0) for x_i in X]
-        return np.array(X)
+        X=np.array(X)
+        return X
+
 
 class LoadData(object):
     def __init__(self,as_dataset):
