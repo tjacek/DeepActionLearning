@@ -1,14 +1,13 @@
 import seq.io
 import basic.instances
 
-class Extractor(object):
-    def __init__(self,get_feats, feat_fun=True,img_seq=False):
+class TimeSeriesExtractor(object):
+    def __init__(self,get_feats, feat_fun=True):
         self.get_feats=get_feats
-        self.feat_fun=feat_fun
-        self.img_seq=img_seq
+        self.feat_fun=feat_funimg_seq
 
     def __call__(self,in_path,out_path):
-        read_actions=seq.io.build_action_reader(img_seq=self.img_seq,as_dict=False)
+        read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
         actions=read_actions(in_path)
         def action_helper(action_i):
             cat,person,name=action_i.cat,action_i.person,action_i.name
@@ -30,3 +29,14 @@ class Extractor(object):
             else:
                 data=self.get_feats(action_i)
             return data
+
+class FrameExtractor(object):
+    def __init__(self, get_feats):
+        self.get_feats = get_feats
+
+    def __call__(self,in_path,out_path):
+        def action_helper(action_i):
+            new_img_seq=self.get_feats(action_i.as_array())
+            return action_i.clone(new_img_seq)
+        seq.io.transform_actions(in_path,out_path,action_helper,
+                                    img_in=True,img_out=True,whole_seq=True)

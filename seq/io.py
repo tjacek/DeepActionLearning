@@ -44,7 +44,7 @@ class SeqType(object):
         self.norm=norm
 
     def parse_action(self,action_path):   
-        name,cat,person,self.get_action_desc(action_path)
+        name,cat,person=self.get_action_desc(action_path)
         img_seq= self.read_seq(action_path) #read_text_action(action_path)
         #if(self.img_seq):
         #    img_seq=np.array(img_seq)
