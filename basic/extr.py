@@ -35,8 +35,7 @@ class FrameExtractor(object):
         self.get_feats = get_feats
 
     def __call__(self,in_path,out_path):
-        def action_helper(action_i):
-            new_img_seq=self.get_feats(action_i.as_array())
-            return action_i.clone(new_img_seq)
+        def action_helper(img_seq):
+            return self.get_feats(img_seq)
         seq.io.transform_actions(in_path,out_path,action_helper,
-                                    img_in=True,img_out=True,whole_seq=True)
+                                    img_in=True,img_out=False,whole_seq=True)
