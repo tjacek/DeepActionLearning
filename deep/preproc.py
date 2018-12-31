@@ -2,14 +2,16 @@ import numpy as np
 import utils,seq.io
 
 class FramePreproc(object):
-    def __init__(self,dim,norm=None):
+    def __init__(self,dim,norm=255):
         self.dim=dim
-        self.norm=norm
+        self.norm= (1.0/float(norm)) if(type(norm)==int) else None
 
     def __call__(self,X):
         X=[np.vsplit(x_i,self.dim) for x_i in X]
         X=[np.stack(x_i,0) for x_i in X]
         X=np.array(X)
+        if(self.norm):
+            X*=self.norm
         return X
 
 

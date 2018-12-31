@@ -29,11 +29,7 @@ class Convet(deep.NeuralNetwork):
         return np.argmax(dist)
 
     def get_distribution(self,x):
-        print(type(x))
-        print(x.shape)
         x=self.preproc(x)
-        print(x.shape)
-#        x=np.expand_dims(x,0)
         img_x=self.pred(x).flatten()
         return img_x
 

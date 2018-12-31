@@ -1,6 +1,6 @@
 import numpy as np
 import seq,utils
-import cv2,os,gc
+import cv2,os
 
 class ActionReader(object):
     def __init__(self,seq_type,as_dict=False,as_group=False):
@@ -45,12 +45,7 @@ class SeqType(object):
 
     def parse_action(self,action_path):   
         name,cat,person=self.get_action_desc(action_path)
-        img_seq= self.read_seq(action_path) #read_text_action(action_path)
-        #if(self.img_seq):
-        #    img_seq=np.array(img_seq)
-        #    img_seq=img_seq.astype(float)
-        #    img_seq/=self.norm
-        #    gc.collect()
+        img_seq= self.read_seq(action_path)
         print(name)
         return seq.Action(img_seq,name,cat,person)
 
