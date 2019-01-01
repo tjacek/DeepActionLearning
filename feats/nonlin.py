@@ -12,6 +12,3 @@ def non_linear(feat_i):
     resized_feat_i=resized_feat_i[:-2]
     nonlinearity=np.abs(resid_i/resized_feat_i) 
     return [np.mean(nonlinearity),np.median(nonlinearity),np.amax(nonlinearity)]
-
-extr=basic.extr.Extractor(non_linear)
-extr("../_LSTM/all","nolinear.txt")
