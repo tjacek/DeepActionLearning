@@ -30,7 +30,7 @@ class Convet(deep.NeuralNetwork):
 
     def get_distribution(self,x):
         x=self.preproc(x)
-        img_x=self.pred(x).flatten()
+        img_x=self.pred(x)
         return img_x
 
     def dim(self):
