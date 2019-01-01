@@ -11,9 +11,9 @@ class FramePreproc(object):
         X=[np.stack(x_i,0) for x_i in X]
         X=np.array(X)
         if(self.norm):
+            X=X.astype(float)
             X*=self.norm
         return X
-
 
 class LoadData(object):
     def __init__(self,as_dataset):

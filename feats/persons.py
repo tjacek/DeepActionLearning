@@ -6,7 +6,7 @@ class PersonFeatures(object):
     def __init__(self,conv_nns):
         self.conv_nns=conv_nns
 
-    def __call__(action_i):
+    def __call__(self,action_i):
         all_dist=np.array([conv_j.get_distribution(action_i)
                             for conv_j in self.conv_nns])
         all_dist=all_dist[:,:,0]
