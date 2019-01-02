@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from scipy.interpolate import CubicSpline
-import seq.io,utils
+import seq.io,seq.tools,utils
 import basic.preproc
 
 class SplineUpsampling(object):
@@ -30,7 +30,8 @@ def as_imgs(in_path,out_path):
         out_i=out_path+'/'+name_i+".png"
         cv2.imwrite(out_i,img_i)
   	
-
-spline_upsampling=basic.preproc.Preproc(SplineUpsampling())
-spline_upsampling('../series/preproc/norm_all','../series/up_norm_all')
+#seq.io.normalize("../wrap/mra_preproc/raw/all","../wrap/mra_preproc/norm/all")
+#spline_upsampling=basic.preproc.Preproc(SplineUpsampling())
+#spline_upsampling("../wrap/mra_preproc/norm/max_z","../wrap/mra_preproc/up/max_z")
+seq.tools.concat("../wrap/mra_preproc/up/all","../wrap/mra_preproc/up/max_z/", "../wrap/mra_preproc/full")
 #as_imgs('../series/up_norm_all','../series/img_actions')

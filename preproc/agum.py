@@ -4,6 +4,8 @@ from scipy.interpolate import CubicSpline
 
 class Agumentation(object):
     def __init__(self,agum_fun):
+        if(type(agum_fun)!=list):
+            agum_fun=[agum_fun]
         self.agum_fun=agum_fun
 
     def __call__(self,in_path,out_path):
@@ -13,13 +15,15 @@ class Agumentation(object):
         agum_actions=[]
         for action_i in train:
             agum_actions+=self.agum_action(action_i)
+        agum_actions+=train
+        agum_actions+=test    
         save_actions=seq.io.ActionWriter(False)
         save_actions(agum_actions,out_path)	
     
     def agum_action(self,action_i):
     	print(action_i.name)
         feats=action_i.as_features()
-        agum_feats=[self.agum_fun(feat_i) 
+        agum_feats=[self.gen_agum(feat_i) 
                         for feat_i in feats]
         agum_feats=map(list,zip(*agum_feats)) 
         def action_helper(j,feats_j):
@@ -31,6 +35,12 @@ class Agumentation(object):
                         for j,feats_j in enumerate(agum_feats)]
         print(action_i.name)
         return agum_actions
+
+    def gen_agum(self,feat_i):
+        agum_feat=[]
+        for fun_j in self.agum_fun:
+            agum_feat+=fun_j(feat_i)
+        return agum_feat
 
 class SamplingAgum(object):
     def __init__(self,max_size=128,seq_size=16):
@@ -46,6 +56,15 @@ class SamplingAgum(object):
             	agum_seqs.append(warp_seq(feat_i,size_j,self.seq_size,side_i))
         agum_seqs=[interpolate(self.max_size,agum_i) for agum_i in agum_seqs]
         return agum_seqs
+
+class Scale(object):
+    def __init__(self,factor=2):
+        self.factor=factor
+
+    def __call__(self,feat_i):
+        large=feat_i*self.factor
+        small=feat_i/self.factor
+        return [large,small]
 
 def warp_seq(feat_i,new_size,warp_size,side=True):
     print(feat_i.shape)
@@ -68,5 +87,6 @@ def get_x(n):
     x/=float(n)
     return x
 
-agum=Agumentation(SamplingAgum())
-agum('datasets2/up_full','datasets2/agum')
+if __name__ == "__main__":
+    agum=Agumentation([SamplingAgum(),Scale()])
+    agum('../wrap/mra/basic/data','../wrap/mra/agum/data')
