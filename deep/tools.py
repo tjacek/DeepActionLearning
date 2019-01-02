@@ -34,25 +34,31 @@ def build_deep_extractor(nn_path,cat_feat=False):
         conv_helper=lambda action_i:conv(action_i.as_array())
     return basic.extr.FrameExtractor(conv_helper)
 
-def train_model(in_path,nn_path=None):
+def train_ts_network(in_path):
+    load_data=deep.preproc.LoadData("time_series")
     X_train,y_train,X_test,y_test=load_data(in_path)
-    print(X_train.shape)
-    model=make_model(y_train)
-    model=deep.train.train_super_model(X_train,y_train,model)
-    verify_model(y_test,X_test,model)
-    if(nn_path):
-        model.get_model().save(nn_path)
-
-def test_model(data_path,nn_path):
-    X_train,y_train,X_test,y_test=load_data(data_path)
-    nn_reader=deep.reader.NNReader()
-    conv=nn_reader(nn_path)
-    verify_model(y_test,X_test,conv)
-
-def verify_model(y_test,X_test,model):
-    y_pred=[model.get_category(x_i) for x_i in X_test]
-    print(classification_report(y_test, y_pred,digits=4))
+    ts_network=deep.convnet.make_model(y_train,"time_series")
 
 def binarize(y,cat_j):
     return [ 0 if(y_i==cat_j) else 1
                for y_i in y]
+
+#def train_model(in_path,nn_path=None):
+#    X_train,y_train,X_test,y_test=load_data(in_path)
+#    print(X_train.shape)
+#    model=make_model(y_train)
+#    model=deep.train.train_super_model(X_train,y_train,model)
+#    verify_model(y_test,X_test,model)
+#    if(nn_path):
+#        model.get_model().save(nn_path)
+
+#def test_model(data_path,nn_path):
+#    X_train,y_train,X_test,y_test=load_data(data_path)
+#    nn_reader=deep.reader.NNReader()
+#    conv=nn_reader(nn_path)
+#    verify_model(y_test,X_test,conv)
+
+#def verify_model(y_test,X_test,model):
+#    y_pred=[model.get_category(x_i) for x_i in X_test]
+#    print(classification_report(y_test, y_pred,digits=4))
+

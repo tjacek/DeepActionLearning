@@ -112,7 +112,7 @@ def make_model(y,get_params):
     n_cats=np.unique(y).shape[0]
     if(get_params=="frame"):
         params=frame_network_params(n_cats)
-    elif(get_params=="ts")
+    elif(get_params=="time_series")
         params=ts_network_params(n_cats)
     else:    
         params= get_params(n_cats)#deep.convnet.default_params()
