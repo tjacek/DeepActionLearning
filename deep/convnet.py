@@ -29,7 +29,7 @@ class Convet(deep.NeuralNetwork):
         return np.argmax(dist)
 
     def get_distribution(self,x):
-        x=self.preproc(x)
+        x=self.preproc(x) if(self.preproc) else self.preproc
         img_x=self.pred(x)
         return img_x
 
@@ -112,6 +112,8 @@ def make_model(y,get_params):
     n_cats=np.unique(y).shape[0]
     if(get_params=="frame"):
         params=frame_network_params(n_cats)
+    elif(get_params=="ts")
+        params=ts_network_params(n_cats)
     else:    
         params= get_params(n_cats)#deep.convnet.default_params()
     return deep.convnet.compile_convnet(params)
