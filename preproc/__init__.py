@@ -1,6 +1,5 @@
 import numpy as np
 import seq.io
-import instances
 
 class Preproc(object):
     def __init__(self,preproc_fun=None):
@@ -20,3 +19,12 @@ class Preproc(object):
                         for action_i in actions]
         save_actions=seq.io.ActionWriter(False)
         save_actions(actions,out_path)
+
+class Pipeline(object):
+    def __init__(self,all_fun):
+        self.all_fun=all_fun
+
+    def __call__(self,feat_i):
+        for fun_i in self.all_fun:
+            feat_i= fun_i(feat_i)
+        return feat_i
