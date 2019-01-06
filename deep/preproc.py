@@ -18,10 +18,12 @@ class FramePreproc(object):
 class LoadData(object):
     def __init__(self,as_dataset="person"):
         if(as_dataset=="person"):
+            img_seq=True
             as_dataset=person_frames
         if(as_dataset=="time_series"):
+            img_seq=False
             as_dataset=time_series_imgs
-        self.read_actions=seq.io.build_action_reader(img_seq=True,as_dict=False)
+        self.read_actions=seq.io.build_action_reader(img_seq=img_seq,as_dict=False)
         self.as_dataset=as_dataset
 
     def __call__(self,in_path):
@@ -42,6 +44,13 @@ def person_frames(actions):
 def time_series_imgs(actions):
     X,y=[],[]
     for action_i in actions:
-        X.append(action_i.as_array())
+        array_img=action_i.as_array()
+        array_img=np.expand_dims(array_img,0)
+        X.append(array_img)
         y.append(action_i.cat)
-    return np.array(X),y
+    return np.array(X),cats_to_int(y)
+
+def cats_to_int(y):
+    all_cats=np.unique(y)
+    cats_dict={ cat_name:j for j,cat_name in enumerate(all_cats)}
+    return [ cats_dict[y_i] for y_i in y]

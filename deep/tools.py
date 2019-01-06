@@ -34,10 +34,15 @@ def build_deep_extractor(nn_path,cat_feat=False):
         conv_helper=lambda action_i:conv(action_i.as_array())
     return basic.extr.FrameExtractor(conv_helper)
 
-def train_ts_network(in_path):
+def train_ts_network(in_path,nn_path,num_iter=150):
     load_data=deep.preproc.LoadData("time_series")
     X_train,y_train,X_test,y_test=load_data(in_path)
+    
     ts_network=deep.convnet.make_model(y_train,"time_series")
+    ts_network=deep.train.train_super_model(X_train,y_train,ts_network,num_iter=150)
+    verify_model(y_test,X_test,ts_network)
+    if(nn_path):
+        model.get_model().save(nn_path)
 
 def binarize(y,cat_j):
     return [ 0 if(y_i==cat_j) else 1
@@ -58,7 +63,7 @@ def binarize(y,cat_j):
 #    conv=nn_reader(nn_path)
 #    verify_model(y_test,X_test,conv)
 
-#def verify_model(y_test,X_test,model):
-#    y_pred=[model.get_category(x_i) for x_i in X_test]
-#    print(classification_report(y_test, y_pred,digits=4))
+def verify_model(y_test,X_test,model):
+    y_pred=[model.get_category(x_i) for x_i in X_test]
+    print(classification_report(y_test, y_pred,digits=4))
 
