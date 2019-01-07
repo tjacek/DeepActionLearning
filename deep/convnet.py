@@ -20,8 +20,8 @@ class Convet(deep.NeuralNetwork):
         self.preproc=preproc
 
     def __call__(self,in_img):
-        in_img=np.expand_dims(in_img,0)
-        in_img=np.expand_dims(in_img,0)
+        #in_img=np.expand_dims(in_img,0)
+        #in_img=np.expand_dims(in_img,0)
         return self.__features__(in_img).flatten()
     
     def get_category(self,img):
@@ -29,7 +29,7 @@ class Convet(deep.NeuralNetwork):
         return np.argmax(dist)
 
     def get_distribution(self,x):
-        x=self.preproc(x) if(self.preproc) else self.preproc
+        x=self.preproc(x) if(self.preproc) else x
         img_x=self.pred(x)
         return img_x
 
@@ -119,7 +119,7 @@ def make_model(y,get_params):
     return deep.convnet.compile_convnet(params)
 
 def ts_network_params(n_cats):
-    return {"input_shape":(None,1,128,10),"n_cats":n_cats,
+    return {"input_shape":(None,1,128,14),"n_cats":n_cats,
             "n1_filters":8,"n2_filters":8,"n_hidden":100,
             "filter_size":(8,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
 
