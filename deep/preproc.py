@@ -15,6 +15,11 @@ class FramePreproc(object):
             X*=self.norm
         return X
 
+def ts_preproc(action_i):
+    array_img=action_i.as_array()
+    array_img=np.expand_dims(array_img,0)
+    return np.expand_dims(array_img,0)
+
 class LoadData(object):
     def __init__(self,as_dataset="person"):
         if(as_dataset=="person"):

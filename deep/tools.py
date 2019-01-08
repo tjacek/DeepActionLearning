@@ -22,18 +22,6 @@ def person_models(in_path,out_path,num_iter=10,n_frames=4):
         out_i=out_path+'/person' + str(person_i)
         model.get_model().save(out_i)
 
-def build_deep_extractor(nn_path,cat_feat=False):
-    nn_reader=deep.reader.NNReader()
-    conv=nn_reader(nn_path)
-    conv.preproc=deep.preproc.FramePreproc(4)
-    if(cat_feat):
-        def conv_helper(action_i):
-            dist_i=conv.get_distribution(action_i)
-            return [[feat_j] for feat_j in list(dist_i)]
-    else:
-        conv_helper=lambda action_i:conv(action_i.as_array())
-    return basic.extr.FrameExtractor(conv_helper)
-
 def train_ts_network(in_path,nn_path,num_iter=1500):
     load_data=deep.preproc.LoadData("time_series")
     X_train,y_train,X_test,y_test=load_data(in_path)
@@ -47,15 +35,6 @@ def train_ts_network(in_path,nn_path,num_iter=1500):
 def binarize(y,cat_j):
     return [ 0 if(y_i==cat_j) else 1
                for y_i in y]
-
-#def train_model(in_path,nn_path=None):
-#    X_train,y_train,X_test,y_test=load_data(in_path)
-#    print(X_train.shape)
-#    model=make_model(y_train)
-#    model=deep.train.train_super_model(X_train,y_train,model)
-#    verify_model(y_test,X_test,model)
-#    if(nn_path):
-#        model.get_model().save(nn_path)
 
 #def test_model(data_path,nn_path):
 #    X_train,y_train,X_test,y_test=load_data(data_path)

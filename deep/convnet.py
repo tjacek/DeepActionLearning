@@ -20,8 +20,7 @@ class Convet(deep.NeuralNetwork):
         self.preproc=preproc
 
     def __call__(self,in_img):
-        #in_img=np.expand_dims(in_img,0)
-        #in_img=np.expand_dims(in_img,0)
+        in_img=self.preproc(in_img)  if(self.preproc) else in_img
         return self.__features__(in_img).flatten()
     
     def get_category(self,img):
