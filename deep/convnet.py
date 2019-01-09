@@ -107,18 +107,18 @@ def get_updates(loss,out_layer):
             loss, params, learning_rate=0.001, momentum=0.9)
     return updates
 
-def make_model(y,get_params):
+def make_model(y,get_params,dim=12):
     n_cats=np.unique(y).shape[0]
     if(get_params=="frame"):
         params=frame_network_params(n_cats)
     elif(get_params=="time_series"):
-        params=ts_network_params(n_cats)
+        params=ts_network_params(n_cats,dim)
     else:    
         params= get_params(n_cats)#deep.convnet.default_params()
     return deep.convnet.compile_convnet(params)
 
-def ts_network_params(n_cats):
-    return {"input_shape":(None,1,128,14),"n_cats":n_cats,
+def ts_network_params(n_cats,dim):
+    return {"input_shape":(None,1,128,dim),"n_cats":n_cats,
             "n1_filters":8,"n2_filters":8,"n_hidden":100,
             "filter_size":(8,1),"pool_size":(4,1),"p":0.5, "l1_reg":0.001}
 

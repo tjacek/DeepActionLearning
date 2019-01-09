@@ -22,6 +22,7 @@ def ts_preproc(action_i):
 
 class LoadData(object):
     def __init__(self,as_dataset="person"):
+        img_seq=True
         if(as_dataset=="person"):
             img_seq=True
             as_dataset=person_frames
@@ -51,6 +52,7 @@ def time_series_imgs(actions):
     for action_i in actions:
         array_img=action_i.as_array()
         array_img=np.expand_dims(array_img,0)
+        print(array_img.shape)
         X.append(array_img)
         y.append(action_i.cat)
     return np.array(X),cats_to_int(y)
