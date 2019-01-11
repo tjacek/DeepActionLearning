@@ -7,10 +7,10 @@ from lasagne.layers.conv import TransposedConv2DLayer
 import deep.preproc
 
 class ConvAutoencoder(deep.NeuralNetwork):
-    def __init__(self,hyperparams,out_layer,preproc,in_var,
+    def __init__(self,hyperparams,out_layer,in_var,
                      reduction,reconstruction,loss,updates):
         super(ConvAutoencoder,self).__init__(hyperparams,out_layer)
-        self.preproc=preproc
+        #self.preproc=preproc
         self.__prediction__=theano.function([in_var], reduction,allow_input_downcast=True)
         self.__reconstructed__=theano.function([in_var], 
                                            reconstruction,allow_input_downcast=True)
@@ -19,17 +19,17 @@ class ConvAutoencoder(deep.NeuralNetwork):
                                updates=updates,allow_input_downcast=True)
 
     def reconstructed(self,in_img):
-        img4D=self.preproc(in_img)
+        #img4D=self.preproc(in_img)
         raw_rec=self.__reconstructed__(img4D)
-        img_seq=self.preproc.postproc(raw_rec)
-        print(img_seq[0].shape)
-        return img_seq
+        #img_seq=self.preproc.postproc(raw_rec)
+        #print(img_seq[0].shape)
+        return rew_rec
 
     def __call__(self,in_img):
-        img4D=self.preproc.apply(in_img)
-        return self.__prediction__(img4D).flatten()
+        #img4D=self.preproc.apply(in_img)
+        return self.__prediction__(in_img).flatten()
 
-def compile_conv_ae(hyper_params,preproc):
+def compile_conv_ae(hyper_params):
     l_hid,l_out,in_var=build_conv_ae(hyper_params)
     params = lasagne.layers.get_all_params(l_out, trainable=True)
     target_var = T.ivector('targets')
@@ -41,7 +41,7 @@ def compile_conv_ae(hyper_params,preproc):
     #loss+=l1_penalty  
     updates=lasagne.updates.adadelta(loss, params, learning_rate=0.01) 
     #updates=lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.001, momentum=0.8) 
-    return ConvAutoencoder(hyper_params,l_out,preproc,in_var,
+    return ConvAutoencoder(hyper_params,l_out,in_var,
                          reduction,reconstruction,loss,updates)    
 
 def build_conv_ae(hyper_params):
@@ -122,9 +122,9 @@ def show_layer(layer):
 
 def make_autoconv(n_frames=4):
     hyper_params=default_ae(n_frames=n_frames)
-    return deep.convnet.compile_convnet(hyper_params)
+    return compile_conv_ae(hyper_params)
 
-def default_ae(num_hidden=100,n_frames=2):
+def default_ae(num_hidden=100,n_frames=4):
     return {'input_shape':(None, n_frames, 64, 64),
             'n_filters1':16,
             'n_filters2':8,
