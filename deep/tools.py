@@ -2,17 +2,18 @@ import numpy as np
 from sklearn.metrics import classification_report
 import seq.io,utils
 import basic.extr
-import deep.reader,deep.train,deep.convnet,deep.preproc
+import deep.reader,deep.train,deep.preproc
+import deep.convnet,deep.autoconv
 
 def person_models(in_path,out_path,num_iter=10,n_frames=4):
-    X,y,frame_preproc=persons_dataset(in_path,llln_frames)
+    X,y,frame_preproc=persons_dataset(in_path,n_frames)
     person_ids=np.unique(y)
     print(person_ids)
     n_persons=person_ids.shape[0]
     print(X.shape)
     for i in range(n_persons):
         person_i=person_ids[i]
-        y_i=binarize(y,person_i)
+        y_i=deep.preproc.binarize(y,person_i)
         model_i=deep.convnet.make_model(y_i,"frame")
         model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)
         out_i=out_path+'/person' + str(person_i)
@@ -44,9 +45,12 @@ def train_ts_network(in_path,nn_path,num_iter=1500):
     if(nn_path):
         ts_network.get_model().save(nn_path)
 
-def binarize(y,cat_j):
-    return [ 0 if(y_i==cat_j) else 1
-               for y_i in y]
+def train_autoconv(in_path,nn_path,num_iter=1500):
+    load_data=deep.preproc.LoadData("unsuper")
+    X_train,y_train,X_test,y_test=load_data(in_path)
+    autoencoder=deep.autoconv.make_autoconv()
+    autoencoder=deep.train.train_unsuper_model(X_train,autoencoder,num_iter=num_iter)
+    autoencoder.get_model().save(nn_path)
 
 def verify_model(y_test,X_test,model):
     X_test=[np.expand_dims(x_i,0) for x_i in X_test]

@@ -29,12 +29,15 @@ class LoadData(object):
         if(as_dataset=="time_series"):
             img_seq=False
             as_dataset=time_series_imgs
+        if(as_dataset=="unsuper"):
+            img_seq=True
+            as_dataset=unsuper_data
         self.read_actions=seq.io.build_action_reader(img_seq=img_seq,as_dict=False)
         self.as_dataset=as_dataset
 
     def __call__(self,in_path):
         actions=self.read_actions(in_path)
-        train,test=utils.split(actions,lambda action_i: (action_i.person % 2)==1)
+        train,test=standard_split(actions)
         X_train,y_train=self.as_dataset(train)
         X_test,y_test=self.as_dataset(test)
         return X_train,y_train,X_test,y_test
@@ -57,7 +60,20 @@ def time_series_imgs(actions):
         y.append(action_i.cat)
     return np.array(X),cats_to_int(y)
 
+def unsuper_data(actions):
+    for action_i in actions:
+        for img_ij in action_i.img_seq:
+            X.append(img_ij)
+    return np.array(X),None
+
+def standard_split(actions):
+    return utils.split(actions,lambda action_i: (action_i.person % 2)==1)
+
 def cats_to_int(y):
     all_cats=np.unique(y)
     cats_dict={ cat_name:j for j,cat_name in enumerate(all_cats)}
     return [ cats_dict[y_i] for y_i in y]
+
+def binarize(y,cat_j):
+    return [ 0 if(y_i==cat_j) else 1
+               for y_i in y]
