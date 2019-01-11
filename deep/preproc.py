@@ -61,6 +61,7 @@ def time_series_imgs(actions):
     return np.array(X),cats_to_int(y)
 
 def unsuper_data(actions):
+    X=[]
     for action_i in actions:
         for img_ij in action_i.img_seq:
             X.append(img_ij)
