@@ -42,18 +42,19 @@ def train_ts_network(in_path,nn_path,num_iter=1500):
     ts_network=deep.convnet.make_model(y_train,"time_series",dim=16)
     ts_network=deep.train.train_super_model(X_train,y_train,ts_network,num_iter=num_iter)
     verify_model(y_test,X_test,ts_network)
-    if(nn_path):
-        ts_network.get_model().save(nn_path)
+    ts_network.get_model().save(nn_path)
 
-def train_autoconv(in_path,nn_path,num_iter=1500):
+def train_autoconv(in_path,nn_path,num_iter=1500,n_frames=4):
     load_data=deep.preproc.LoadData("unsuper")
     X_train,y_train,X_test,y_test=load_data(in_path)
+    frame_preproc=deep.preproc.FramePreproc(n_frames)
+    X_train=frame_preproc(X_train)
+    print(X_train.shape)
     autoencoder=deep.autoconv.make_autoconv()
     autoencoder=deep.train.train_unsuper_model(X_train,autoencoder,num_iter=num_iter)
     autoencoder.get_model().save(nn_path)
 
 def verify_model(y_test,X_test,model):
     X_test=[np.expand_dims(x_i,0) for x_i in X_test]
-    #print(x_i.shape)
     y_pred=[model.get_category(x_i) for x_i in X_test]
     print(classification_report(y_test, y_pred,digits=4))
