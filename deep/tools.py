@@ -5,35 +5,36 @@ import basic.extr
 import deep.reader,deep.train,deep.preproc
 import deep.convnet,deep.autoconv
 
-def person_models(in_path,out_path,num_iter=10,n_frames=4):
-    X,y,frame_preproc=persons_dataset(in_path,n_frames)
-    person_ids=np.unique(y)
-    print(person_ids)
-    n_persons=person_ids.shape[0]
-    print(X.shape)
-    for i in range(n_persons):
-        person_i=person_ids[i]
-        y_i=deep.preproc.binarize(y,person_i)
+class BinaryModels(object):
+    def __init__(self,as_dataset="cats",name="nn",n_frames=4):
+        self.n_frames=n_frames
+        self.name=name
+        self.as_dataset=as_dataset
+
+    def __call__(self,in_path,out_path,num_iter=10):
+        X,y,frame_preproc=persons_dataset(in_path,
+                    as_dataset=self.as_dataset,n_frames=self.n_frames)
+        binary_datasets,model_paths=self.prepare_datasets(out_path,y)
+        for y_i,out_i in zip(binary_datasets,model_paths):
+            self.train_model(X,y_i,out_i,num_iter)                   
+    
+    def prepare_datasets(self,out_path,y):
+        person_ids=np.unique(y)
+        model_paths=[out_path+self.name+str(i) for i in person_ids]
+        binary_datasets=[deep.preproc.binarize(y,person_i) 
+                            for person_i in person_ids]
+        return binary_datasets,model_paths
+
+    def train_model(self,X,y_i,out_i,num_iter):
         model_i=deep.convnet.make_model(y_i,"frame")
         model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)
-        out_i=out_path+'/person' + str(person_i)
         model.get_model().save(out_i)
 
 def multi_persons_model(in_path,out_path,num_iter=300,n_frames=4):
     X,y,frame_preproc=persons_dataset(in_path,n_frames)
-    print(X.shape)
     mp_model=deep.convnet.make_model(y,"frame")
     mp_model=deep.train.train_super_model(X,y,mp_model,num_iter=num_iter)
     mp_model.get_model().save(out_path)
-
-def persons_dataset(in_path,n_frames=4):
-    load_data=deep.preproc.LoadData(deep.preproc.person_frames)
-    X_train,y_train,X_test,y_test=load_data(in_path)
-    X,y=X_train,y_train
-    frame_preproc=deep.preproc.FramePreproc(n_frames)
-    X=frame_preproc(X)
-    y=deep.preproc.cats_to_int(y)
-    return X,y,frame_preproc
 
 def train_ts_network(in_path,nn_path,num_iter=1500):
     load_data=deep.preproc.LoadData("time_series")
