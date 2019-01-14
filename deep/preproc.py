@@ -27,11 +27,14 @@ def ts_preproc(action_i):
     return np.expand_dims(array_img,0)
 
 class LoadData(object):
-    def __init__(self,as_dataset="person"):
+    def __init__(self,as_dataset="persons"):
         img_seq=True
-        if(as_dataset=="person"):
+        if(as_dataset=="persons"):
             img_seq=True
             as_dataset=person_frames
+        if(as_dataset=="cats"):
+            img_seq=True
+            as_dataset=cat_frames
         if(as_dataset=="time_series"):
             img_seq=False
             as_dataset=time_series_imgs
@@ -48,12 +51,29 @@ class LoadData(object):
         X_test,y_test=self.as_dataset(test)
         return X_train,y_train,X_test,y_test
 
+def frame_dataset(in_path,as_dataset="person",n_frames=4):
+    load_data=deep.preproc.LoadData(as_dataset)
+    X_train,y_train,X_test,y_test=load_data(in_path)
+    X,y=X_train,y_train
+    frame_preproc=deep.preproc.FramePreproc(n_frames)
+    X=frame_preproc(X)
+    y=deep.preproc.cats_to_int(y)
+    return X,y,frame_preproc
+
 def person_frames(actions):
     X,y=[],[]
     for action_i in actions:
     	for img_ij in action_i.img_seq:
     	    X.append(img_ij)
     	    y.append(action_i.person)
+    return np.array(X),y
+
+def cat_frames(actions):
+    X,y=[],[]
+    for action_i in actions:
+        for img_ij in action_i.img_seq:
+            X.append(img_ij)
+            y.append(action_i.cat)
     return np.array(X),y
 
 def time_series_imgs(actions):
