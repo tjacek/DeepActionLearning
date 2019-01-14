@@ -5,7 +5,7 @@ import deep.convnet,deep.autoconv
 class NNReader(object):
     def __init__(self,preproc=None):
         self.types = {'Convet':deep.convnet.compile_convnet,
-                      'Autoconv':deep.autoconv.compile_conv_ae}
+                      'ConbAutorncoder':deep.autoconv.compile_conv_ae}
         
     def __call__(self,in_path, drop_p=0.0,get_hyper=False):
         model=self.__unpickle__(in_path) 

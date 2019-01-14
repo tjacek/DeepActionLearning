@@ -17,8 +17,9 @@ class FramePreproc(object):
 
     def recover(self,X):
         if(self.norm):
-            X*=self.norm
-        return np.concatenate(X,axis=1)
+            X/=self.norm
+        return np.array([np.concatenate(x_i,axis=0) 
+                            for x_i in X])
 
 def ts_preproc(action_i):
     array_img=action_i.as_array()

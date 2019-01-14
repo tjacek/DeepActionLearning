@@ -55,7 +55,8 @@ def train_autoconv(in_path,nn_path,num_iter=1500,n_frames=4):
     autoencoder.get_model().save(nn_path)
 
 def reconstruct_autoconv(in_path,nn_path,out_path,n_frames=4):
-    autoencoder=deep.reader.NNReader(nn_path)
+    reader=deep.reader.NNReader()
+    autoencoder=reader(nn_path)
     frame_preproc=deep.preproc.FramePreproc(n_frames)
     def autoconv_helper(img_seq):
         img_seq=frame_preproc(img_seq)
