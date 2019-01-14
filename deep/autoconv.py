@@ -19,11 +19,7 @@ class ConvAutoencoder(deep.NeuralNetwork):
                                updates=updates,allow_input_downcast=True)
 
     def reconstructed(self,in_img):
-        #img4D=self.preproc(in_img)
-        raw_rec=self.__reconstructed__(img4D)
-        #img_seq=self.preproc.postproc(raw_rec)
-        #print(img_seq[0].shape)
-        return rew_rec
+        return self.__reconstructed__(in_img)
 
     def __call__(self,in_img):
         #img4D=self.preproc.apply(in_img)

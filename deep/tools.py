@@ -54,6 +54,16 @@ def train_autoconv(in_path,nn_path,num_iter=1500,n_frames=4):
     autoencoder=deep.train.train_unsuper_model(X_train,autoencoder,num_iter=num_iter)
     autoencoder.get_model().save(nn_path)
 
+def reconstruct_autoconv(in_path,nn_path,out_path,n_frames=4):
+    autoencoder=deep.reader.NNReader(nn_path)
+    frame_preproc=deep.preproc.FramePreproc(n_frames)
+    def autoconv_helper(img_seq):
+        img_seq=frame_preproc(img_seq)
+        rec_seq=autoencoder.reconstructed(img_seq)
+        return autoencoder.recover(rec_seq)
+    seq.io.transform_actions(in_path,out_path,transform,
+                      img_in=True,img_out=True,whole_seq=True)
+
 def verify_model(y_test,X_test,model):
     X_test=[np.expand_dims(x_i,0) for x_i in X_test]
     y_pred=[model.get_category(x_i) for x_i in X_test]
