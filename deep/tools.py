@@ -3,7 +3,7 @@ from sklearn.metrics import classification_report
 import seq.io,utils
 import basic.extr
 import deep.reader,deep.train,deep.preproc
-import deep.convnet,deep.autoconv
+import deep.convnet,deep.autoconv,os
 
 class BinaryModels(object):
     def __init__(self,as_dataset="cats",name="nn",n_frames=4):
@@ -12,29 +12,26 @@ class BinaryModels(object):
         self.as_dataset=as_dataset
 
     def __call__(self,in_path,out_path,num_iter=10):
-        X,y,frame_preproc=persons_dataset(in_path,
+        X,y,frame_preproc=deep.preproc.frame_dataset(in_path,
                     as_dataset=self.as_dataset,n_frames=self.n_frames)
-        binary_datasets,model_paths=self.prepare_datasets(out_path,y)
-        for y_i,out_i in zip(binary_datasets,model_paths):
-            self.train_model(X,y_i,out_i,num_iter)                   
-    
-    def prepare_datasets(self,out_path,y):
         person_ids=np.unique(y)
         model_paths=[out_path+'/'+self.name+str(i) for i in person_ids]
         binary_datasets=[deep.preproc.binarize(y,person_i) 
                             for person_i in person_ids]
-        return binary_datasets,model_paths
-
-    def train_model(self,X,y_i,out_i,num_iter):
-        model_i=deep.convnet.make_model(y_i,"frame")
-        model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)
-        model.get_model().save(out_i)
+        for y_i,out_i in zip(binary_datasets,model_paths):
+            train_model(X,y_i,out_i,num_iter)                   
 
 def multi_persons_model(in_path,out_path,num_iter=300,n_frames=4):
     X,y,frame_preproc=persons_dataset(in_path,n_frames)
-    mp_model=deep.convnet.make_model(y,"frame")
-    mp_model=deep.train.train_super_model(X,y,mp_model,num_iter=num_iter)
-    mp_model.get_model().save(out_path)
+    train_model(X,y,out_path,num_iter)
+
+def train_model(X,y_i,out_i,num_iter):
+    if(os.path.isfile(out_i)) 
+        model_i=deep.reader.NNReader()(out_i)
+    else:
+        model_i=deep.convnet.make_model(y_i,"frame")
+    model=deep.train.train_super_model(X,y_i,model_i,num_iter=num_iter)
+    model.get_model().save(out_i)
 
 def train_ts_network(in_path,nn_path,num_iter=1500):
     load_data=deep.preproc.LoadData("time_series")

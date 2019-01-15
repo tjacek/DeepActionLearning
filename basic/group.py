@@ -1,10 +1,10 @@
 import utils
 
 class GroupFun(object):
-	def __init__(self, fun):
-		self.fun = fun
+    def __init__(self, fun):
+        self.fun = fun
 		
-    def __init__(nn_path,out_path):
+    def __call__(self,nn_path,out_path):
         model_paths=utils.bottom_dirs(nn_path)
         seqs_paths=utils.switch_paths(out_path,model_paths)
         utils.make_dir(out_path)
