@@ -1,6 +1,19 @@
 import numpy as np
-import deep.reader
+import deep.reader,utils
 import basic.extr,deep.preproc
+
+class EnsembleExtr(object):
+    def __init__(self,fun):
+        self.fun=fun
+
+    def __call__(in_path,out_path):
+        all_paths=utils.bottom_dirs(in_path)
+        new_paths=utils.switch_paths(out_path,all_paths)
+        for in_i,out_i in zip(all_paths,new_paths):
+            self.fun(in_i,out_i):
+
+def ensemble_frame_extractor(nn_path,cat_feat=True,n_frames=4):
+    return EnsembleExtr(build_frame_extractor(nn_path,cat_feat,n_frames))
 
 def build_ts_extractor(nn_path):
     nn_reader=deep.reader.NNReader()

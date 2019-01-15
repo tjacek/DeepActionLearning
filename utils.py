@@ -31,6 +31,10 @@ def split(actions,selector):
             test.append(action_i)
     return train,test
 
+def switch_paths(new_path,paths):
+    postfixes=[ path_i.split("/")[-1] for path_i in paths]
+    return [new_path+"/"+postfix_i for postfix_i in postfixes]
+
 def atoi(text):
     return int(text) if text.isdigit() else text
 

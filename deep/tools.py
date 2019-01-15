@@ -20,7 +20,7 @@ class BinaryModels(object):
     
     def prepare_datasets(self,out_path,y):
         person_ids=np.unique(y)
-        model_paths=[out_path+self.name+str(i) for i in person_ids]
+        model_paths=[out_path+'/'+self.name+str(i) for i in person_ids]
         binary_datasets=[deep.preproc.binarize(y,person_i) 
                             for person_i in person_ids]
         return binary_datasets,model_paths
