@@ -26,7 +26,7 @@ def multi_persons_model(in_path,out_path,num_iter=300,n_frames=4):
     train_model(X,y,out_path,num_iter)
 
 def train_model(X,y_i,out_i,num_iter):
-    if(os.path.isfile(out_i)) 
+    if(os.path.isfile(out_i)):
         model_i=deep.reader.NNReader()(out_i)
     else:
         model_i=deep.convnet.make_model(y_i,"frame")

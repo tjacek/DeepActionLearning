@@ -25,8 +25,8 @@ class FrameExtractorFactory(object):
     def __call__(self,nn_path):
         nn_reader=deep.reader.NNReader()
         conv=nn_reader(nn_path)
-        conv.preproc=deep.preproc.FramePreproc(n_frames)#deep.preproc.ts_preproc
-        if(cat_feat):
+        conv.preproc=deep.preproc.FramePreproc(self.n_frames)#deep.preproc.ts_preproc
+        if(self.cat_feat):
             def conv_helper(action_i):
                dist_i=conv.get_distribution(action_i)
                return dist_i#[[feat_j] for feat_j in list(dist_i)]
