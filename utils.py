@@ -22,6 +22,11 @@ def bottom_dirs(path):
     all_paths.sort(key=natural_keys) 
     return all_paths
 
+def top_dirs(path):
+    all_paths=[os.path.join(path,name_i) for name_i in os.listdir(path)]
+    return [name_i for name_i in all_paths
+                if(os.path.isdir(name_i))]
+
 def split(actions,selector):
     train,test=[],[]
     for action_i in actions:

@@ -4,7 +4,7 @@ import seq.io,utils
 
 def concat_files(paths,out_path='seqs/full'):
     if(os.path.isdir(paths)):
-        paths=utils.bottom_dirs(paths)
+        paths=utils.top_dirs(paths)
     seq_type=get_seq_type(paths[0])
     read_actions=seq.io.build_action_reader(img_seq=seq_type,as_dict=True)
     action_sets=[read_actions(path_i) for path_i in paths]
