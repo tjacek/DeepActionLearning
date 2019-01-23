@@ -51,13 +51,13 @@ class LoadData(object):
         X_test,y_test=self.as_dataset(test)
         return X_train,y_train,X_test,y_test
 
-def frame_dataset(in_path,as_dataset="person",n_frames=4):
-    load_data=deep.preproc.LoadData(as_dataset)
+def frame_dataset(in_path,as_dataset="persons",n_frames=4):
+    load_data=LoadData(as_dataset)
     X_train,y_train,X_test,y_test=load_data(in_path)
     X,y=X_train,y_train
-    frame_preproc=deep.preproc.FramePreproc(n_frames)
+    frame_preproc=FramePreproc(n_frames)
     X=frame_preproc(X)
-    y=deep.preproc.cats_to_int(y)
+    y=cats_to_int(y)
     return X,y,frame_preproc
 
 def person_frames(actions):

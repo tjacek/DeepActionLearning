@@ -21,8 +21,8 @@ class BinaryModels(object):
         for y_i,out_i in zip(binary_datasets,model_paths):
             train_model(X,y_i,out_i,num_iter)                   
 
-def multi_persons_model(in_path,out_path,num_iter=300,n_frames=4):
-    X,y,frame_preproc=persons_dataset(in_path,n_frames)
+def multi_persons_model(in_path,out_path,num_iter=970,n_frames=4):
+    X,y,frame_preproc=deep.preproc.frame_dataset(in_path,as_dataset="persons",n_frames=n_frames)
     train_model(X,y,out_path,num_iter)
 
 def train_model(X,y_i,out_i,num_iter):
