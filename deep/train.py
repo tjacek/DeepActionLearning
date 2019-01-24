@@ -1,12 +1,13 @@
 import numpy as np
 import deep.convnet
-
+import time
 def train_super_model(X,y,model,
                       batch_size=100,num_iter=1500):
     print("Num iters " + str(num_iter))
     x_batch,n_batches=get_batch(X,batch_size)
     y_batch,n_batches=get_batch(y,batch_size)
     print(x_batch[0].shape)
+    t0=time.time()
     for epoch in range(num_iter):
         cost_e = []
         for i in range(n_batches):
@@ -16,6 +17,7 @@ def train_super_model(X,y,model,
             cost_e.append(loss_i)
         cost_mean=np.mean(cost_e)
         print(str(epoch) + " "+str(cost_mean))
+    print("Time %d" % (time.time() - t0))
     return model
 
 def train_unsuper_model(X,model,
