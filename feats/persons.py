@@ -1,5 +1,5 @@
 import numpy as np
-import deep.reader,deep.preproc
+import deep.reader,deep.preproc,deep.extr
 import utils,basic.extr
 
 class PersonFeatures(object):
@@ -12,11 +12,7 @@ class PersonFeatures(object):
         all_dist=all_dist[:,:,0]
         return np.array(all_dist).T
 
-def build_person_features(in_path,n_frames=4):
-    nn_paths=utils.bottom_files(in_path)
-    nn_reader=deep.reader.NNReader()
-    preproc=deep.preproc.FramePreproc(n_frames)
-    conv_nns=[nn_reader(nn_path_i) for nn_path_i in nn_paths]
-    for conv_i in conv_nns:
-    	conv_i.preproc=preproc
-    return basic.extr.FrameExtractor( PersonFeatures(conv_nns))
+def build_person_features(in_path,nn_path,out_path,n_frames=4):
+    factory=deep.extr.FrameExtractorFactory(cat_feat=True)
+    frame_extractor=factory(nn_path)
+    frame_extractor(in_path,out_path)
