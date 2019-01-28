@@ -60,7 +60,7 @@ def reconstruct_autoconv(in_path,nn_path,out_path,n_frames=4):
     def autoconv_helper(img_seq):
         img_seq=frame_preproc(img_seq)
         rec_seq=autoencoder.reconstructed(img_seq)
-        return autoencoder.recover(rec_seq)
+        return frame_preproc.recover(rec_seq)
     seq.io.transform_actions(in_path,out_path,autoconv_helper,
                       img_in=True,img_out=True,whole_seq=True)
 
@@ -71,7 +71,8 @@ def diff_autoconv(in_path,nn_path,out_path,n_frames=4):
     def diff_helper(img_seq):
         img_seq=frame_preproc(img_seq)
         rec_seq=autoencoder.reconstructed(img_seq)
-        return np.abs(rec_seq-img_seq)
+        diff_img=np.abs(rec_seq-img_seq)
+        return frame_preproc.recover(rec_seq)
     seq.io.transform_actions(in_path,out_path,diff_helper,
                       img_in=True,img_out=True,whole_seq=True)
 
