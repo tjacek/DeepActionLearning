@@ -86,6 +86,15 @@ def time_series_imgs(actions):
         y.append(action_i.cat)
     return np.array(X),cats_to_int(y)
 
+def img_preproc(in_path,out_path,transform,n_frames=4):
+    frame_preproc=deep.preproc.FramePreproc(n_frames)
+    def img_dec(img_seq):
+        img_seq=frame_preproc(img_seq)
+        img_seq=transform(img_seq)
+        return frame_preproc.recover(rec_seq)
+    seq.io.transform_actions(in_path,out_path,img_dec,
+                      img_in=True,img_out=True,whole_seq=True)
+
 def unsuper_data(actions):
     X=[]
     for action_i in actions:

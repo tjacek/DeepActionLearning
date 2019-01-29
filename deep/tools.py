@@ -56,25 +56,17 @@ def train_autoconv(in_path,nn_path,num_iter=1500,n_frames=4):
 def reconstruct_autoconv(in_path,nn_path,out_path,n_frames=4):
     reader=deep.reader.NNReader()
     autoencoder=reader(nn_path)
-    frame_preproc=deep.preproc.FramePreproc(n_frames)
     def autoconv_helper(img_seq):
-        img_seq=frame_preproc(img_seq)
-        rec_seq=autoencoder.reconstructed(img_seq)
-        return frame_preproc.recover(rec_seq)
-    seq.io.transform_actions(in_path,out_path,autoconv_helper,
-                      img_in=True,img_out=True,whole_seq=True)
+        return autoencoder.reconstructed(img_seq)
+    deep.preproc.img_preproc(in_path,out_path,autoconv_helper,n_frames=n_frames)
 
 def diff_autoconv(in_path,nn_path,out_path,n_frames=4):
     reader=deep.reader.NNReader()
     autoencoder=reader(nn_path)
-    frame_preproc=deep.preproc.FramePreproc(n_frames)
     def diff_helper(img_seq):
-        img_seq=frame_preproc(img_seq)
         rec_seq=autoencoder.reconstructed(img_seq)
-        diff_img=np.abs(rec_seq-img_seq)
-        return frame_preproc.recover(rec_seq)
-    seq.io.transform_actions(in_path,out_path,diff_helper,
-                      img_in=True,img_out=True,whole_seq=True)
+        return np.abs(rec_seq-img_seq)
+    deep.preproc.img_preproc(in_path,out_path,diff_helper,n_frames=n_frames)
 
 def verify_model(y_test,X_test,model):
     X_test=[np.expand_dims(x_i,0) for x_i in X_test]
