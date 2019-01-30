@@ -1,17 +1,17 @@
 import numpy as np
 from collections import Counter
 import basic,utils
-import ensemble.tools
+import ensemble.tools,ensemble.inspect
 
 def learning(handcrafted_path=None,deep_path=None,feats=(250,100)):
     datasets_dict=get_datasets(handcrafted_path,deep_path)
-    print(type(datasets_dict))
     feat_reduction(datasets_dict,hc_feats=feats[0],deep_feats=feats[1])
-    print(type(datasets_dict))
     datasets=preproc_dataset(datasets_dict)
     y_true,all_pred=get_prediction(datasets)
+    indiv=ensemble.inspect.cls_accuracy(y_true,all_pred,stats=False)
     y_pred=vote(all_pred)
     ensemble.tools.show_result(y_true,y_pred,datasets[0])
+    ensemble.tools.show_stats(y_true,y_pred,datasets[0])
 
 def get_datasets(handcrafted_path=None,deep_path=None):
     if(not handcrafted_path and not deep_path):
@@ -38,7 +38,7 @@ def feat_reduction(datasets_dict,hc_feats=250,deep_feats=100):
 def preproc_dataset(datasets_dict):
     datasets=datasets_dict["deep"]
     if(datasets_dict["handcrafted"]):
-    	hc_data=datasets_dict["handcrafted"]
+        hc_data=datasets_dict["handcrafted"]
         if(datasets_dict["deep"]):
             datasets=[basic.unify_datasets([hc_data,deep_i])
                         for deep_i in datasets]

@@ -56,3 +56,7 @@ def heat_map(conf_matrix):
     sn.set(font_scale=1.0)#for label size
     sn.heatmap(df_cm, annot=True,annot_kws={"size": 8}, fmt='g')
     plt.show()
+
+def show_stats(indiv):
+    stats=(np.amin(indiv),np.median(indiv),np.mean(indiv),np.amax(indiv))
+    print("min:%f median:%f mean:%f max:%f" %  stats)
