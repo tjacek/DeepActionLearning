@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
@@ -10,17 +11,11 @@ from sklearn.svm import SVC
 from sklearn.feature_selection import RFE
 from sklearn import tree
 
-def train_model(i,dataset_i,tree_cls=False):
-    cls_name= "tree cls " if(tree_cls) else "logistic regression"
-    print("dataset %d %s" % (i,cls_name))
-    train,test=dataset_i.split()
-    if(tree_cls):
-        clf=tree.DecisionTreeClassifier()
-    else:    
-        clf=LogisticRegression()
-    clf = clf.fit(train.X, train.y)
-    y_pred = clf.predict(test.X)
-    return test.y,y_pred
+def SVC_cls():
+    return SVC(),"SVC"
+
+def logistic_cls():
+    return LogisticRegression(),"Logistic Regression"
 
 def rfe_selection(dataset,n=100):
     if( (dataset is None) or dataset.dim()<n or n==0):
