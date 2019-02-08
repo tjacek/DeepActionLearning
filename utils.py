@@ -1,4 +1,5 @@
 import os,os.path,re,pickle
+import numpy as np 
 
 def make_dir(path):
     if(not os.path.isdir(path)):
@@ -83,3 +84,8 @@ def str_to_vector(str,sep=","):
 
 def all_equal(items,value):
     return all(x == items[0] for x in items)
+
+def one_hot(cat_i,n):
+    vote_i=np.zeros((n,))
+    vote_i[cat_i]=1
+    return vote_i

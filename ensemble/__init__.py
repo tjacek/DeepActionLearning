@@ -2,15 +2,17 @@ import numpy as np
 from collections import Counter
 import ensemble.data
 import ensemble.tools,ensemble.inspect
+import utils
 
 class Ensemble(object):
-    def __init__(self,clf=None):
+    def __init__(self,clf=None,prob=False):
         self.clf=clf if(clf) else tools.logistic_cls
+        self.prob=prob
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100)):
         datasets=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
         y_true,all_pred=self.get_prediction(datasets)
-        indiv=ensemble.inspect.cls_accuracy(y_true,all_pred,stats=False)
+        #indiv=ensemble.inspect.cls_accuracy(y_true,all_pred,stats=False)
         y_pred=vote(all_pred)
         ensemble.tools.show_result(y_true,y_pred,datasets[0])
 
@@ -18,7 +20,7 @@ class Ensemble(object):
         result=[ self.train_model(i,data_i) 
                     for i,data_i in enumerate(datasets)]
         y_true=result[0][0]
-        all_pred=[result_i[1] for result_i in result]
+        all_pred=np.array([result_i[1] for result_i in result])
         return y_true,all_pred
 
     def train_model(self,i,dataset_i):
@@ -26,14 +28,20 @@ class Ensemble(object):
         clf,clf_name=self.clf()
         print("dataset %d %s" % (i,clf_name))
         clf = clf.fit(train.X, train.y)
-        y_pred = clf.predict(test.X)
+        n_cats=train.n_cats()
+        if(self.prob):
+            y_pred = clf.predict_proba(test.X)
+        else:
+            y_pred=clf.predict(test.X)
+            y_pred=to_vector_votes(y_pred,n_cats)
+            print(y_pred.shape)
         return test.y,y_pred
 
-def vote(all_votes):
-    all_votes=np.array(all_votes)
-    y_pred=[]
-    for vote_i in all_votes.T:
-        count =Counter(vote_i)
-        cat_i=count.most_common()[0][0]
-        y_pred.append(cat_i)
-    return y_pred
+def to_vector_votes(votes,n_cats):
+    return np.array([utils.one_hot(cat_i-1,n_cats) 
+                        for cat_i in votes])
+
+def vote(raw_votes):
+    sumed_votes=np.sum(raw_votes,axis=0)
+    result=[np.argmax(vote_i)+1 for vote_i in sumed_votes]
+    return result
