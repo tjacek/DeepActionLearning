@@ -1,5 +1,13 @@
 import os,os.path,re,pickle
 import numpy as np 
+from sets import Set 
+
+class CatSelector(object):
+    def __init__(self, allowed_set):
+        self.allowed_set = Set(allowed_set)
+
+    def __call__(self,inst_i):
+        return (inst_i.cat in self.allowed_set)
 
 def make_dir(path):
     if(not os.path.isdir(path)):
@@ -88,4 +96,4 @@ def all_equal(items,value):
 def one_hot(cat_i,n):
     vote_i=np.zeros((n,))
     vote_i[cat_i]=1
-    return vote_i
+    return vote_i        

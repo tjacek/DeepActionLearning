@@ -18,14 +18,24 @@ class Dataset(object):
     def n_cats(self):
         return np.unique(self.y).shape[0]
 
+    def unique_persons(self):
+        return np.unique(self.persons)
+
+    def integer_labels(self):
+        labels=np.unique(self.y)
+        labels2ints={ label_i:i for i,label_i in enumerate(labels)}
+        self.y=[labels2ints[y_i]+1 for y_i in self.y]
+        return self
+
     def norm(self):
         self.X=preprocessing.scale(self.X)
 
-    def split(self):
+    def split(self,selector=None):
+        print(min(self.y))
         insts=self.to_instances()
-        train,test=insts.split()
+        train,test=insts.split(selector)
         return to_dataset(train),to_dataset(test)
-    
+
     def save(self,out_path,order=True):
         insts=self.to_instances()
         if(order):

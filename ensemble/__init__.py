@@ -5,12 +5,16 @@ import ensemble.tools,ensemble.inspect
 import utils
 
 class Ensemble(object):
-    def __init__(self,clf=None,prob=False):
+    def __init__(self,clf=None,prob=False,selector=None):
         self.clf=clf if(clf) else tools.logistic_cls
         self.prob=prob
+        self.selector=selector
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100)):
         datasets=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
+        if(self.selector):
+            datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
+            datasets=[ data_i.integer_labels() for data_i in datasets]
         y_true,all_pred=self.get_prediction(datasets)
         #indiv=ensemble.inspect.cls_accuracy(y_true,all_pred,stats=False)
         y_pred=vote(all_pred)
