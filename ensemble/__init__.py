@@ -10,7 +10,7 @@ class Ensemble(object):
         self.prob=prob
         self.selector=selector
 
-    def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100)):
+    def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),cf_path=None):
         datasets=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
         if(self.selector):
             datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
@@ -18,7 +18,9 @@ class Ensemble(object):
         y_true,all_pred=self.get_prediction(datasets)
         #indiv=ensemble.inspect.cls_accuracy(y_true,all_pred,stats=False)
         y_pred=vote(all_pred)
-        ensemble.tools.show_result(y_true,y_pred,datasets[0])
+        cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
+        if(cf_path):
+            np.savetxt(cf_path,cf_matrix.values,delimiter=",")
 
     def get_prediction(self,datasets):
         result=[ self.train_model(i,data_i) 

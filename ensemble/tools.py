@@ -9,10 +9,13 @@ import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 from sklearn.svm import SVC
 from sklearn.feature_selection import RFE
-from sklearn import tree
+import sklearn.grid_search as gs
 
 def SVC_cls():
-    return SVC(),"SVC"
+    params=[{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],'C': [1, 10, 50,110, 1000]},
+            {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]    
+    clf = gs.GridSearchCV(SVC(C=1,probability=True),params, cv=5,scoring='accuracy')
+    return clf,"SVC"
 
 def logistic_cls():
     return LogisticRegression(),"Logistic Regression"
@@ -37,7 +40,8 @@ def show_result(y_true,y_pred,dataset=None):
     cf=confusion_matrix(y_true, y_pred)
     cf_matrix=pd.DataFrame(cf,index=range(cf.shape[0]))
     heat_map(cf_matrix)
-
+    return cf_matrix
+    
 def show_errors(y_true,y_pred,names):
     errors=[ true_i!=pred_i for true_i,pred_i in zip(y_true,y_pred)]
     error_descs=[(name_i,y_pred[i])
