@@ -36,6 +36,8 @@ class Convet(deep.NeuralNetwork):
         return self.hyperparams['n_hidden']
 
 def compile_convnet(params):
+    if(not params):
+        params=frame_network_params(20)
     in_layer,out_layer,hid_layer,all_layers=build_model(params)
     target_var = T.ivector('targets')
     features_pred = lasagne.layers.get_output(hid_layer)
@@ -72,14 +74,18 @@ def build_model(params):
             pool_layer1, num_filters=n2_filters, filter_size=filter_size2D,
             nonlinearity=lasagne.nonlinearities.rectify)
     pool_layer2 = lasagne.layers.MaxPool2DLayer(conv_layer2, pool_size=pool_size2D)
+    print(lasagne.layers.count_params(pool_layer2))
+
     dropout = lasagne.layers.DenseLayer(
             lasagne.layers.dropout(pool_layer2, p=p_drop),
             num_units= n_hidden,
             nonlinearity=lasagne.nonlinearities.rectify)
+    print(lasagne.layers.count_params(dropout))
     out_layer = lasagne.layers.DenseLayer(
             lasagne.layers.dropout(dropout, p=p_drop),
             num_units=int(n_cats),
             nonlinearity=lasagne.nonlinearities.softmax)
+
     all_layers={"in":in_layer, "conv1":conv_layer1,"pool":pool_layer1,
                 "conv2":conv_layer2,"pool2":pool_layer2,
                 "hidden":dropout,"out":out_layer }
