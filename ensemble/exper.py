@@ -1,4 +1,4 @@
-def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble):
+def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble,out_path='result.csv'):
     result=''
     for feature_set_i in common_paths:
         name_i=get_name(feature_set_i)
@@ -6,7 +6,9 @@ def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble):
         full_path_i=get_full_paths(dir_path,feature_set_i)
         line_i=ensemble(full_path_i,deep_paths,feats)
         result+=name_i+','+line_i+'\n'
-    print(result)
+    out_file=open(out_path,'w+')
+    out_file.write(result)
+    out_file.close()
 
 def get_name(feature_set_i):
     if(type(feature_set_i)==str):
