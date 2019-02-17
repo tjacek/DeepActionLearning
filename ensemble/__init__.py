@@ -5,26 +5,26 @@ import ensemble.tools,ensemble.inspect
 import utils
 
 class Ensemble(object):
-    def __init__(self,clf=None,prob=False,selector=None,show=True):
+    def __init__(self,clf=None,prob=False,selector=None):
         self.clf=clf if(clf) else tools.logistic_cls
         self.prob=prob
         self.selector=selector
-        self.show=show
 
 
-    def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),cf_path=None):
+    def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
         datasets=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
         if(self.selector):
             datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
             datasets=[ data_i.integer_labels() for data_i in datasets]
         y_true,all_pred=self.get_prediction(datasets)
         y_pred=vote(all_pred)
-        if(self.show):
+        if(show):
             cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
+            if(type(show)==str):
+                np.savetxt(show,cf_matrix.values,delimiter=",")
         else:    
             return ensemble.tools.compute_score(y_true, y_pred)
-        if(cf_path):
-            np.savetxt(cf_path,cf_matrix.values,delimiter=",")
+        
 
     def get_prediction(self,datasets):
         result=[ self.train_model(i,data_i) 
