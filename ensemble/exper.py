@@ -1,14 +1,20 @@
 def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble,out_path='result.csv'):
     result=''
+    desc=get_descritpion(deep_paths,feats)
     for feature_set_i in common_paths:
         name_i=get_name(feature_set_i)
         print(name_i)
         full_path_i=get_full_paths(dir_path,feature_set_i)
         line_i=ensemble(full_path_i,deep_paths,feats,show=False)
-        result+=name_i+','+line_i+'\n'
+        result+=name_i+','+desc+','+line_i+'\n'
     out_file=open(out_path,'w+')
     out_file.write(result)
     out_file.close()
+
+def get_descritpion(deep_paths,feats):
+    desc= "Yes" if(deep_paths) else "No"
+    desc+= ",RFE" if(feats[0]) else ",None"
+    return desc
 
 def get_name(feature_set_i):
     if(type(feature_set_i)==str):
