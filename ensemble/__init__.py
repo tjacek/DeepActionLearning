@@ -10,9 +10,8 @@ class Ensemble(object):
         self.prob=prob
         self.selector=selector
 
-
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
-        datasets=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
+        datasets,n_feats=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
         if(self.selector):
             datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
             datasets=[ data_i.integer_labels() for data_i in datasets]
@@ -23,9 +22,8 @@ class Ensemble(object):
             if(type(show)==str):
                 np.savetxt(show,cf_matrix.values,delimiter=",")
         else:    
-            return ensemble.tools.compute_score(y_true, y_pred)
+            return ensemble.tools.compute_score(y_true, y_pred),n_feats
         
-
     def get_prediction(self,datasets):
         result=[ self.train_model(i,data_i) 
                     for i,data_i in enumerate(datasets)]

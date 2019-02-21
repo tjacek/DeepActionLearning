@@ -5,8 +5,8 @@ def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble,out_path='
         name_i=get_name(feature_set_i)
         print(name_i)
         full_path_i=get_full_paths(dir_path,feature_set_i)
-        line_i=ensemble(full_path_i,deep_paths,feats,show=False)
-        result+=name_i+','+desc+','+line_i+'\n'
+        score_i,n_feats_i=ensemble(full_path_i,deep_paths,feats,show=False)
+        result+='%s,%s,%d,%s\n' % (name_i,desc,n_feats_i,score_i)
     out_file=open(out_path,'w+')
     out_file.write(result)
     out_file.close()

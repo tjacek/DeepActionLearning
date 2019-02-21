@@ -37,8 +37,9 @@ def preproc_dataset(datasets_dict):
                         for deep_i in datasets]
         else:
             datasets=[hc_data]
-    print("Number of feats %d " % datasets[0].dim())
-    return datasets
+    n_feats=datasets[0].dim()        
+    print("Number of feats %d " % n_feats)
+    return datasets,n_feats
 
 def read_data(in_path,norm=True):
     dataset=basic.read_dataset(in_path)
