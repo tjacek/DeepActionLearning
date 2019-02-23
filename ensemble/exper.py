@@ -1,11 +1,22 @@
 import ensemble
 
+def multi_experiment(arg_dicts,clf_type,out_path):
+    ens=ensemble.Ensemble(clf_type,False,None)
+    lines=[]
+    def dict_helper(arg_dict_i):
+        dir_path,common_paths,deep_paths,feats=arg_dict_i['dir'],arg_dict_i['common'],arg_dict_i['deep'],arg_dict_i['feats']
+        return simple_experiment(dir_path,common_paths,deep_paths,feats,ens)
+    for arg_dict_i in arg_dicts:
+        lines+=dict_helper(arg_dict_i):
+    to_csv(lines,out_path)
+
 def dict_experiment(arg_dict,clf_type,out_path):
     ens=ensemble.Ensemble(clf_type,False,None)
     dir_path,common_paths,deep_paths,feats=arg_dict['dir'],arg_dict['common'],arg_dict['deep'],arg_dict['feats']
-    simple_experiment(dir_path,common_paths,deep_paths,feats,ens,out_path)
+    lines=simple_experiment(dir_path,common_paths,deep_paths,feats,ens)
+    to_csv(lines,out_path)
 
-def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble,out_path='result.csv'):
+def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble):
     desc=get_descritpion(deep_paths,feats)
     def line_helper(feature_set_i):
         if( not feature_set_i and not deep_paths):
@@ -15,7 +26,9 @@ def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble,out_path='
         full_path_i=get_full_paths(dir_path,feature_set_i)
         score_i,n_feats_i=ensemble(full_path_i,deep_paths,feats,show=False)
         return '%s,%s,%d,%s' % (name_i,desc,n_feats_i,score_i)
-    lines=[line_helper(feature_set_i) for feature_set_i in common_paths]      
+    return [line_helper(feature_set_i) for feature_set_i in common_paths]      
+
+def to_csv(lines,out_path):
     out_file=open(out_path,'w+')
     out_file.write('\n'.join(lines))
     out_file.close()
