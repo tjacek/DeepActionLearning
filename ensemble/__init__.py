@@ -21,8 +21,9 @@ class Ensemble(object):
             cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
             if(type(show)==str):
                 np.savetxt(show,cf_matrix.values,delimiter=",")
-        else:    
-            return ensemble.tools.compute_score(y_true, y_pred),n_feats
+        else:
+            as_str=not self.selector
+            return ensemble.tools.compute_score(y_true, y_pred,as_str),n_feats
         
     def get_prediction(self,datasets):
         result=[ self.train_model(i,data_i) 

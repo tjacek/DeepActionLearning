@@ -49,9 +49,12 @@ def show_errors(y_true,y_pred,names):
                         if(errors[i])]
     print(error_descs)
 
-def compute_score(y_true,y_pred):
+def compute_score(y_true,y_pred,as_str=True):
     precision,recall,f1,support=precision_recall_fscore_support(y_true,y_pred,average='macro')
-    return "%0.4f,%0.4f,%0.4f,%0.4f" % (precision,recall,precision,f1)
+    if(as_str):
+        return "%0.4f,%0.4f,%0.4f,%0.4f" % (precision,recall,precision,f1)
+    else:
+        return (precision,recall,precision,f1)
 
 def heat_map(conf_matrix):
     dim=conf_matrix.shape
