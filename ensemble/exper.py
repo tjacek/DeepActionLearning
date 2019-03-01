@@ -17,18 +17,22 @@ def dict_experiment(arg_dict,clf_type,out_path):
     lines=simple_experiment(dir_path,common_paths,deep_paths,feats,ens)
     to_csv(lines,out_path)
 
-def subset_eperiment(arg_dict,clf_type,out_path,cat_subsets):
+def subset_eperiment(arg_dict,clf_type,out_path,cat_subsets,legend=True):
     all_ensembles=[ensemble.Ensemble(clf_type,False,utils.CatSelector(a_i)) 
                         for a_i in cat_subsets]
     dir_path,common_paths,deep_paths,feats=arg_dict['dir'],arg_dict['common'],arg_dict['deep'],arg_dict['feats']
     lines=simple_experiment(dir_path,common_paths,deep_paths,feats,all_ensembles)
     to_csv(lines,out_path)
 
-def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble):
+def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble,legend=True):
     desc=get_descritpion(deep_paths,feats)
+    if(legend):
+        lines=["Feature Sets,Deep Ensemble,Feature Selection,Number of Features,Accuracy,Precision,Recall,F1-score"]
+    else:
+        lines=[]
+    if(not deep_paths):
+        common_paths=[feature_set_i for feature_set_i in common_paths if(feature_set_i)]    
     def line_helper(feature_set_i):
-        if( not feature_set_i and not deep_paths):
-            return ''
         name_i=get_name(feature_set_i)
         print(name_i)
         full_path_i=get_full_paths(dir_path,feature_set_i)
@@ -37,14 +41,13 @@ def simple_experiment(dir_path,common_paths,deep_paths,feats,ensemble):
         else:
             score_i,n_feats_i=ensemble(full_path_i,deep_paths,feats,show=False)
         return '%s,%s,%d,%s' % (name_i,desc,n_feats_i,score_i)
-    return [line_helper(feature_set_i) for feature_set_i in common_paths]      
+    return lines+[line_helper(feature_set_i) for feature_set_i in common_paths]      
 
 def get_avg_ensemble(full_path_i,deep_paths,feats,all_ensemble):
     metrics=[ensemble_i(full_path_i,deep_paths,feats,show=False) for ensemble_i in all_ensemble]
     n_feats=metrics[0][1]
     metrics=np.array([metric_i[0] for metric_i in metrics])
     metrics=np.mean(metrics,axis=0)
-    #metrics=[str(metric_i) for metric_i in metrics]
     metrics= "%.4f,%.4f,%.4f,%.4f," % (metrics[0],metrics[1],metrics[2],metrics[3])
     return metrics,n_feats  
 
