@@ -18,9 +18,7 @@ class Ensemble(object):
         y_true,all_pred=self.get_prediction(datasets)
         y_pred=vote(all_pred)
         if(show):
-            cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
-            if(type(show)==str):
-                np.savetxt(show,cf_matrix.values,delimiter=",")
+            self.show_result(y_true,y_pred,datasets[0],show)
         else:
             as_str=not self.selector
             return ensemble.tools.compute_score(y_true, y_pred,as_str),n_feats
@@ -31,6 +29,11 @@ class Ensemble(object):
         y_true=result[0][0]
         all_pred=np.array([result_i[1] for result_i in result])
         return y_true,all_pred
+
+    def show_result(self,y_true,y_pred,data,show):
+        cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
+        if(type(show)==str):
+            np.savetxt(show,cf_matrix.values,delimiter=",")
 
     def train_model(self,i,dataset_i):
         train,test=dataset_i.split()
