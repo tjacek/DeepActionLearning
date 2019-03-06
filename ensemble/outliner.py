@@ -17,3 +17,9 @@ def train_one_SVM(i,data_i):
     clf_i.fit(train_i.X)
     print("Train one class SVM %d" % i)
     return clf_i
+
+def read_detectors(in_path):
+    all_paths=utils.bottom_files(in_path)
+    print(all_paths)
+    detectors=[ load(path_i) for path_i in all_paths]
+    return detectors
