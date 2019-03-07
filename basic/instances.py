@@ -4,8 +4,10 @@ import utils
 
 class InstsGroup(object):
     def __init__(self,instances):
-        if(type(instances)!=dict):
+        if(type(instances)==list):
             instances={ inst_i.name:inst_i for inst_i in instances}
+        if(type(instances)==InstsGroup):
+            instances=instances.instances
         self.instances=instances
     
     def __len__(self):
@@ -16,6 +18,10 @@ class InstsGroup(object):
     
     def raw(self):
         return self.instances.values()
+
+    def ordered_raw(self):
+        names=self.names()
+        return [self.instances[name_i] for name_i in names]
 
     def names(self):
         names=list(self.instances.keys())
