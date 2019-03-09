@@ -11,18 +11,18 @@ class Ensemble(object):
         self.selector=selector
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
+        datasets,n_feats=self.get_datasets(handcrafted_path,deep_path,feats)
+        y_true,all_pred=self.get_prediction(datasets)
+        y_pred=vote(all_pred)
+        return self.show_result(show,y_true,y_pred,datasets,n_feats)
+    
+    def get_datasets(self,handcrafted_path=None,deep_path=None,feats=(250,100)):
         datasets,n_feats=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
         if(self.selector):
             datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
             datasets=[ data_i.integer_labels() for data_i in datasets]
-        y_true,all_pred=self.get_prediction(datasets)
-        y_pred=vote(all_pred)
-        if(show):
-            self.show_result(y_true,y_pred,datasets[0],show)
-        else:
-            as_str=not self.selector
-            return ensemble.tools.compute_score(y_true, y_pred,as_str),n_feats
-        
+        return datasets,n_feats
+
     def get_prediction(self,datasets):
         result=[ self.train_model(i,data_i) 
                     for i,data_i in enumerate(datasets)]
@@ -30,10 +30,14 @@ class Ensemble(object):
         all_pred=np.array([result_i[1] for result_i in result])
         return y_true,all_pred
 
-    def show_result(self,y_true,y_pred,data,show):
-        cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
-        if(type(show)==str):
-            np.savetxt(show,cf_matrix.values,delimiter=",")
+    def show_result(self,show,y_true,y_pred,datasets,n_feats):
+        if(show):
+            cf_matrix=ensemble.tools.show_result(y_true,y_pred,datasets[0])
+            if(type(show)==str):
+                np.savetxt(show,cf_matrix.values,delimiter=",")
+        else:
+            as_str=not self.selector
+            return ensemble.tools.compute_score(y_true, y_pred,as_str),n_feats
 
     def train_model(self,i,dataset_i):
         train,test=dataset_i.split()
@@ -49,6 +53,11 @@ class Ensemble(object):
             print(y_pred.shape)
         return test.y,y_pred
 
+class WeightedEnsemble(Ensemble):
+    def __init__(self,weight_helper, clf=None,prob=False,selector=None):
+        super(WeightedEnsemble, self).__init__(clf,prob,selector)
+        self.weight_helper=weight_helper
+        
 def to_vector_votes(votes,n_cats):
     return np.array([utils.one_hot(cat_i-1,n_cats) 
                         for cat_i in votes])
