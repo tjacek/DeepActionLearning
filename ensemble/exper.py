@@ -1,5 +1,11 @@
 import numpy as np
-import ensemble,utils
+import ensemble,utils,ensemble.outliner
+
+def weight_experiment(arg_dicts, clf_type,outliner_path):
+    common_paths,deep_paths,feats=arg_dicts['common'],arg_dicts['deep'],arg_dicts['feats']
+    weights=ensemble.outliner.get_weights(None,deep_paths,(0,0),outliner_path)
+    ens=ensemble.WeightedEnsemble(weights,clf=clf_type)
+    ens(common_paths,deep_paths,feats,show=True)
 
 def multi_experiment(arg_dicts,clf_type,out_path):
     ens=ensemble.Ensemble(clf_type,False,None)

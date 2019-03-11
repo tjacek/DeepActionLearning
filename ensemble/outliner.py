@@ -14,7 +14,7 @@ class OutlinerWeights(object):
         return weights
 
     def get_weights(self,ensemble_dataset):
-        return { name_i: self(samples_i) 
+        return { name_i.strip(): self(samples_i) 
                     for name_i,samples_i in ensemble_dataset.items()}
 
 def get_weights(handcrafted_path,deep_path,feats,outliner_path):
