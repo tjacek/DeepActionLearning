@@ -60,13 +60,13 @@ class WeightedEnsemble(Ensemble):
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
         datasets,n_feats=self.get_datasets(handcrafted_path,deep_path,feats)
-        y_true,votes=self.get_prediction(datasets)
-        y_pred=self.count_votes(votes)
+        y_true,votes,names_true=self.get_prediction(datasets)
+        y_pred=self.count_votes(votes,names_true)
         return self.show_result(show,y_true,y_pred,datasets,n_feats)
 
     def get_prediction(self,datasets):
         train,test=zip(*[data_i.split() for data_i in datasets])
-        y_true=test[0].y
+        y_true,names_true=test[0].y,test[0].names
         clfs,clf_name=zip(*[self.clf() for data_i in datasets])
         n_cats=len(clfs)
         for clf_i,train_i in zip(clfs,train):
@@ -77,17 +77,20 @@ class WeightedEnsemble(Ensemble):
                         for name_j,ens_sample_j in ens_data.items()}
         votes={ name_j.strip():to_vector_votes(vote_j,n_cats) 
                     for name_j,vote_j in votes.items()}
-        return y_true,votes
+        return y_true,votes,names_true
 
-    def count_votes(self,votes):
+    def count_votes(self,votes,names_true):
         def vote_helper(name_j):
             vote_j=votes[name_j]
             weights_j=self.weights[name_j]
-            weigted_vote_j=[ weights_ij*vote_ij 
-                                for vote_ij,weights_ij in zip(vote_j,weights_j)]
+            print(vote_j.shape)
+            weigted_vote_j=vote_j#[ weights_ij*vote_ij 
+                           #     for vote_ij,weights_ij in zip(vote_j,weights_j)]
             weigted_vote_j=np.sum(np.array(weigted_vote_j),axis=0)
-            return np.argmax(weigted_vote_j)                   
-        return [ vote_helper(name_j) for name_j in votes.keys()]
+            return np.argmax(weigted_vote_j) +1                  
+        y_pred=[ vote_helper(name_j) for name_j in names_true]
+        print(y_pred)
+        return y_pred
 
 def to_vector_votes(votes,n_cats):
     return np.array([utils.one_hot(cat_i-1,n_cats) 

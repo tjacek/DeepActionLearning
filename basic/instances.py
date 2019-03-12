@@ -90,6 +90,7 @@ def from_files(in_path):
 
 def parse_instance(line_i):
     feats,cat,person,name=line_i.split("#")
+    name=name.strip()
     data=utils.str_to_vector(feats)
     return Instance(data,cat,person,name)
 
