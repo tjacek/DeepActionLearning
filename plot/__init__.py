@@ -1,19 +1,25 @@
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 import basic
 from sets import Set
 from sklearn.manifold import TSNE
-import utils
+import utils,plot.colors
 
 def save_datasets(in_path,out_path,color_helper=None):
+    if(color_helper=="persons"): 
+        make_helper=plot.colors.make_person_colors#(dataset.persons)
+    if(color_helper=="cats"): 
+        make_helper=plot.colors.make_cat_colors#(dataset.persons)
     utils.make_dir(out_path)
     paths=utils.bottom_files(in_path)
     for in_path_i in paths:
         name_i=in_path_i.split('/')[-1]
+        name_i=name_i.split(".")[0]
         out_path_i=out_path+'/'+name_i
         dataset=basic.read_dataset(in_path_i)
+        color_helper=make_helper(dataset)
         X,y=dataset.X,dataset.y
-        color_helper=PersonColors(dataset.persons)
         X=TSNE(n_components=2,perplexity=30).fit_transform(X)
         plt_i=plot_embedding(X,y,title=name_i,color_helper=color_helper,show=False)
         plt.savefig(out_path_i)
