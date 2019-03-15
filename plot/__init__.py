@@ -1,29 +1,11 @@
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
-import numpy as np
-import random,basic
+import basic
 from sets import Set
 from sklearn.manifold import TSNE
 import utils
 
-class CatColors(object):
-    def __init__(self,cats):
-        self.cats=cats
-        self.n_cats= cats.shape[0]
-
-    def __call__(self,i,y_i):    
-        num=float(self.cats[int(y_i)-1])
-        div=float(self.n_cats)
-        return  num/div
-
-class PersonColors(object):
-    def __init__(self, persons):
-        self.persons = persons
-    
-    def __call__(self,i,y_i):
-        return float(self.persons[i]%2)
-
-def save_datasets(in_path,out_path):
+def save_datasets(in_path,out_path,color_helper=None):
     utils.make_dir(out_path)
     paths=utils.bottom_files(in_path)
     for in_path_i in paths:
@@ -43,18 +25,6 @@ def show_dataset(in_path,title="plot"):
     X=TSNE(n_components=2,perplexity=30).fit_transform(X)
     print(X.shape)
     plot_embedding(X,y,title=title,color_helper=color_helper,show=True)
-
-def make_cat_colors(y,highlist=None):
-    cats=np.unique(y)
-    if(highlist):
-        highlist=Set(highlist)
-        for i in range(n_cats):
-            cat_i= int(cats[i])
-            if(not cat_i in highlist):
-                cats[i]=0
-    else:
-        random.shuffle(cats)
-    return CatColors(cats)
 
 def plot_embedding(X,y,title="plot",color_helper=None,show=True):
     n_points=X.shape[0]
