@@ -6,10 +6,10 @@ from sets import Set
 from sklearn.manifold import TSNE
 import utils,plot.colors
 
-def save_datasets(in_path,out_path,color_helper=None):
-    if(color_helper=="persons"): 
+def save_datasets(in_path,out_path,make_helper=None):
+    if(make_helper=="persons"): 
         make_helper=plot.colors.make_person_colors#(dataset.persons)
-    if(color_helper=="cats"): 
+    if(make_helper=="cats"): 
         make_helper=plot.colors.make_cat_colors#(dataset.persons)
     utils.make_dir(out_path)
     paths=utils.bottom_files(in_path)
