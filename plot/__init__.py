@@ -12,7 +12,10 @@ def save_datasets(in_path,out_path,make_helper=None):
     if(make_helper=="cats"): 
         make_helper=plot.colors.make_cat_colors#(dataset.persons)
     utils.make_dir(out_path)
-    paths=utils.bottom_files(in_path)
+    if(type(in_path)==str):
+        paths=utils.bottom_files(in_path)
+    else:
+        paths=in_path
     for in_path_i in paths:
         name_i=in_path_i.split('/')[-1]
         name_i=name_i.split(".")[0]

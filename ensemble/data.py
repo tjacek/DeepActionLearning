@@ -13,7 +13,10 @@ def read_datasets(handcrafted_path=None,deep_path=None):
     if(handcrafted_path):
         handcrafted_dataset= read_data(handcrafted_path)
     if(deep_path):
-        deep_paths=utils.bottom_files(deep_path)
+        if(type(deep_path)==str):
+            deep_paths=utils.bottom_files(deep_path)
+        else:
+            deep_paths=deep_path
         if(len(deep_paths)==0):
             raise Exception("No datasets at " + deep_path)
         deep_datasets=[read_data(path_i) for path_i in deep_paths]
@@ -46,3 +49,19 @@ def read_data(in_path,norm=True):
     if(norm):
         dataset.norm()
     return dataset
+
+def to_ensemble_samples(datasets,split=True):
+    ens_insts=[ dataset_i.to_instances() for dataset_i in datasets]
+    def ens_helper(names):
+        return { name_j:[insts_i[name_j].data.reshape(1, -1) 
+                    for insts_i in ens_insts]
+                        for name_j in names} 
+    if(split):
+        train,test=datasets[0].to_instances().split()
+        return {'train':ens_helper(train.names()),
+                'test':ens_helper(test.names())}
+    else:
+        return ens_helper(datasets[0].names)
+
+def to_train_ensemble(datasets):
+    return [data_i.split()[0].X for data_i in datasets]
