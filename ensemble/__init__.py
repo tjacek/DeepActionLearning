@@ -11,6 +11,8 @@ class Ensemble(object):
         self.selector=selector
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
+        if(type(handcrafted_path)==dict):
+            handcrafted_path,deep_path,feats=handcrafted_path['common'],handcrafted_path['deep'],handcrafted_path['feats']
         datasets,n_feats=self.get_datasets(handcrafted_path,deep_path,feats)
         y_true,all_pred=self.get_prediction(datasets)
         y_pred=vote(all_pred)
@@ -84,8 +86,8 @@ class WeightedEnsemble(Ensemble):
             vote_j=votes[name_j]
             weights_j=self.weights[name_j]
             print(vote_j.shape)
-            weigted_vote_j=vote_j#[ weights_ij*vote_ij 
-                           #     for vote_ij,weights_ij in zip(vote_j,weights_j)]
+            weigted_vote_j=[ weights_ij*vote_ij 
+                                for vote_ij,weights_ij in zip(vote_j,weights_j)]
             weigted_vote_j=np.sum(np.array(weigted_vote_j),axis=0)
             return np.argmax(weigted_vote_j) +1                  
         y_pred=[ vote_helper(name_j) for name_j in names_true]
