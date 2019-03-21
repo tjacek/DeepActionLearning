@@ -7,6 +7,16 @@ def weight_experiment(arg_dicts, clf_type,outliner_path):
     ens=ensemble.WeightedEnsemble(weights,clf=clf_type)
     ens(common_paths,deep_paths,feats,show=True)
 
+def single_exp(arg_dicts,clf_type,cf_path=True):
+    common_paths,deep_paths,feats=arg_dicts['common'],arg_dicts['deep'],arg_dicts['feats']
+    if( 'dir' in arg_dicts):
+        dir_path=arg_dicts['dir']
+        hc_paths=[ dir_path+'/'+path_i for path_i in common_paths]
+    else:
+        hc_paths=common_paths
+    ens=ensemble.Ensemble(clf=clf_type)
+    ens(hc_paths,deep_paths,feats,show=cf_path)
+
 def multi_experiment(arg_dicts,clf_type,out_path):
     ens=ensemble.Ensemble(clf_type,False,None)
     lines=[]

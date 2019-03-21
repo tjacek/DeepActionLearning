@@ -11,8 +11,6 @@ class Ensemble(object):
         self.selector=selector
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
-        if(type(handcrafted_path)==dict):
-            handcrafted_path,deep_path,feats=handcrafted_path['common'],handcrafted_path['deep'],handcrafted_path['feats']
         datasets,n_feats=self.get_datasets(handcrafted_path,deep_path,feats)
         y_true,all_pred=self.get_prediction(datasets)
         y_pred=vote(all_pred)

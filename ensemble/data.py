@@ -2,6 +2,8 @@ import basic,utils
 import ensemble.tools
 
 def get_datasets(handcrafted_path,deep_path,feats):
+    if(type(handcrafted_path)==dict):
+        handcrafted_path,deep_path,feats=handcrafted_path['common'],handcrafted_path['deep'],handcrafted_path['feats']
     datasets_dict=read_datasets(handcrafted_path,deep_path)
     feat_reduction(datasets_dict,hc_feats=feats[0],deep_feats=feats[1])
     return preproc_dataset(datasets_dict)
