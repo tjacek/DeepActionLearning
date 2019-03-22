@@ -10,12 +10,23 @@ class OutlinerWeights(object):
     def __call__(self,all_samples_i):
         weights=np.array([outliner_j.predict(sample_ij)[0] 
                     for sample_ij, outliner_j in zip(all_samples_i,self.outliner_detectors)])
-        weights[weights==(-1)]=0
+        weights[weights==1]=1.0
+        weights[weights==(-1)]=0.0
         return weights
 
     def get_weights(self,ensemble_dataset):
         return { name_i.strip(): self(samples_i) 
                     for name_i,samples_i in ensemble_dataset.items()}
+
+    def cat_separation(self,i,dataset_i,cat_j):
+        detector_i=self.outliner_detectors[i]
+        y_i=np.array(dataset_i.y)
+        y_i[y_i!=cat_j]=0.0
+        y_i[y_i!=0.0]=1.0
+        outliners_i=detector_i.predict(dataset_i.X)
+        outliners_i[outliners_i==-1]=0.0
+        outliners_i[outliners_i==1]=1.0
+        return np.dot(y_i,outliners_i)/ np.sum(y_i)
 
 def get_weights(handcrafted_path,deep_path,feats,outliner_path):
     datasets,n_feats=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
