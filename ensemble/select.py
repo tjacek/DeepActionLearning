@@ -1,11 +1,17 @@
+import numpy as np
 import ensemble.data,ensemble.tools,basic,utils
 import ensemble.outliner
 
 def select_feats(dict_arg,detector_path,cat_j=0):
     datasets,n_feats=ensemble.data.get_datasets(dict_arg,None,None)
+    train_data=[dataset_i.split()[0] 
+                        for dataset_i in datasets]
     detectors=ensemble.outliner.read_detectors(detector_path)
-    quality=[ detectors.cat_separation(i,dataset_i,cat_j)
-                for i,dataset_i in enumerate(datasets)]
+    n_cats=len(datasets)
+    quality=[[ detectors.cat_separation(i,train_i,cat_j+1)
+                for i,train_i in enumerate(train_data)]
+                    for cat_j in range(n_cats)]
+    quality=np.array(quality)
     print(quality)
 #def select_feats(in_path,out_path,n_feats=100):
 #    deep_paths=utils.bottom_files(in_path)
