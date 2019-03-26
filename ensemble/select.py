@@ -2,6 +2,15 @@ import numpy as np
 import ensemble.data,ensemble.tools,basic,utils
 import ensemble.outliner
 
+class CatSelector(object):
+    def __init__(self, allowed_set):
+        allowed_set=Set(allowed_set)
+        self.selector = lambda inst_i: (inst_i.cat in allowed_set)
+
+    def __call__(self,datasets):
+        datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
+        return [ data_i.integer_labels() for data_i in datasets]
+
 def acc_correlation(clf_acc,dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
         quality_metric=diagonal_criterion
@@ -26,15 +35,16 @@ def diagonal_criterion(quality):
     diag[diag<1.0]==0
     return diag
 
-def max_std(quality):
+def std_cat(quality):
+    cat_std=np.mean(quality,axis=0)
+    hardest_cat=np.argmax(cat_std)
+    return quality[:,hardest_cat]
+
+def mean_cat(quality):
     print(np.amin( quality,axis=0))
     print(np.amin( quality,axis=1)  )
-    mean_sep=np.mean(quality,axis=1)
-    print(mean_sep)
-    index=np.argmin(mean_sep)
-    print(index)
-    print(quality[index])
-    print(np.argmax(quality[index]))
+    return np.mean(quality,axis=1)
+
 
 #def select_feats(in_path,out_path,n_feats=100):
 #    deep_paths=utils.bottom_files(in_path)

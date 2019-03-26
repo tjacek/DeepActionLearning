@@ -19,8 +19,7 @@ class Ensemble(object):
     def get_datasets(self,handcrafted_path=None,deep_path=None,feats=(250,100)):
         datasets,n_feats=ensemble.data.get_datasets(handcrafted_path,deep_path,feats)
         if(self.selector):
-            datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
-            datasets=[ data_i.integer_labels() for data_i in datasets]
+            datasets=self.selector(datasets)
         return datasets,n_feats
 
     def get_prediction(self,datasets):

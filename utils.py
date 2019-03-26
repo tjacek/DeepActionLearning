@@ -2,13 +2,6 @@ import os,os.path,re,pickle
 import numpy as np 
 from sets import Set 
 
-class CatSelector(object):
-    def __init__(self, allowed_set):
-        self.allowed_set = Set(allowed_set)
-
-    def __call__(self,inst_i):
-        return (inst_i.cat in self.allowed_set)
-
 def make_dir(path):
     if(not os.path.isdir(path)):
         os.mkdir(path)
