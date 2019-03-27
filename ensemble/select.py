@@ -11,6 +11,20 @@ class CatSelector(object):
         datasets=[ data_i.split(self.selector)[0] for data_i in datasets]
         return [ data_i.integer_labels() for data_i in datasets]
 
+class DatasetSelector(object):
+    def __init__(self,allowed_list):
+        self.allowed_list=allowed_list
+
+    def __call__(self,datasets):
+        return [datasets[i] for i in self.allowed_list]
+
+def make_data_selector(dict_arg,detector_path,clf_selection=None):
+    if(not clf_selection):
+        clf_selection=diagonal_selection
+    inliners_matrix=feats_inliners(dict_arg,detector_path)
+    allowed_list=clf_selection(inliners_matrix)
+    return DatasetSelector(allowed_list)
+
 def acc_correlation(clf_acc,dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
         quality_metric=diagonal_criterion
@@ -30,6 +44,11 @@ def feats_inliners(dict_arg,detector_path):
                     for cat_j in range(n_cats)]
     return np.array(quality)
 
+def diagonal_selection(quality):
+    clf_quality=diagonal_criterion(quality)
+    return [ i for i,bool_i in enumerate(clf_quality)
+                if(bool_i==1.0)]
+
 def diagonal_criterion(quality):
     diag=np.diagonal(quality)
     diag[diag<1.0]==0
@@ -44,7 +63,6 @@ def mean_cat(quality):
     print(np.amin( quality,axis=0))
     print(np.amin( quality,axis=1)  )
     return np.mean(quality,axis=1)
-
 
 #def select_feats(in_path,out_path,n_feats=100):
 #    deep_paths=utils.bottom_files(in_path)
