@@ -20,18 +20,22 @@ class DatasetSelector(object):
 
 def make_data_selector(dict_arg,detector_path,clf_selection=None):
     if(not clf_selection):
-        clf_selection=diagonal_selection
+        #clf_selection=diagonal_selection
+        clf_selection=mean_criterion
     inliners_matrix=feats_inliners(dict_arg,detector_path)
     allowed_list=clf_selection(inliners_matrix)
     return DatasetSelector(allowed_list)
 
 def acc_correlation(clf_acc,dict_arg,detector_path,quality_metric=None):
+    feats_quality=clf_quality(dict_arg,detector_path,quality_metric=)
+    X=np.stack([clf_acc,feats_quality])
+    return np.corrcoef(X)[0][1]
+
+def clf_quality(dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
         quality_metric=diagonal_criterion
     inliners_matrix=feats_inliners(dict_arg,detector_path)
-    feats_quality=quality_metric(inliners_matrix)
-    X=np.stack([clf_acc,feats_quality])
-    return np.corrcoef(X)[0][1]
+    return quality_metric(inliners_matrix)
 
 def feats_inliners(dict_arg,detector_path):
     datasets,n_feats=ensemble.data.get_datasets(dict_arg,None,None)
@@ -54,10 +58,13 @@ def diagonal_criterion(quality):
     diag[diag<1.0]==0
     return diag
 
-def std_cat(quality):
-    cat_std=np.mean(quality,axis=0)
-    hardest_cat=np.argmax(cat_std)
-    return quality[:,hardest_cat]
+def mean_criterion(quality):
+    clf_quality=np.mean(quality,axis=1)
+    return np.argsort(clf_quality)[15:]
+#def std_cat(quality):
+#    cat_std=np.mean(quality,axis=0)
+#    hardest_cat=np.argmax(cat_std)
+#    return quality[:,hardest_cat]
 
 def mean_cat(quality):
     print(np.amin( quality,axis=0))
