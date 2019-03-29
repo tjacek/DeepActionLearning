@@ -2,6 +2,20 @@ import numpy as np
 import ensemble.data,ensemble.tools,basic,utils
 import ensemble.outliner
 
+class ClfStats(object):
+    def __init__(self, clf_quality=None,inspect_acc=None):
+        if(not clf_quality):
+            clf_quality=diagonal_criterion
+        self.clf_quality = clf_quality
+        if(not inspect_acc):
+            inspect_acc=correlation_acc
+        self.inspect_acc=inspect_acc
+
+    def __call__(self,clf_acc,dict_arg,detector_path):
+        inliners_matrix=feats_inliners(dict_arg,detector_path)
+        feats_quality=self.clf_quality(inliners_matrix)
+        return self.inspect_acc(clf_acc,feats_quality)
+
 class CatSelector(object):
     def __init__(self, allowed_set):
         allowed_set=Set(allowed_set)
@@ -20,16 +34,22 @@ class DatasetSelector(object):
 
 def make_data_selector(dict_arg,detector_path,clf_selection=None):
     if(not clf_selection):
-        #clf_selection=diagonal_selection
         clf_selection=mean_criterion
     inliners_matrix=feats_inliners(dict_arg,detector_path)
     allowed_list=clf_selection(inliners_matrix)
     return DatasetSelector(allowed_list)
 
-def acc_correlation(clf_acc,dict_arg,detector_path,quality_metric=None):
-    feats_quality=clf_quality(dict_arg,detector_path,quality_metric=)
+def diagonal_criterion(quality):
+    diag=np.diagonal(quality)
+    diag[diag<1.0]==0
+    return diag
+
+def correlation_acc(clf_acc,feats_quality):
     X=np.stack([clf_acc,feats_quality])
     return np.corrcoef(X)[0][1]
+
+
+
 
 def clf_quality(dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
@@ -53,10 +73,7 @@ def diagonal_selection(quality):
     return [ i for i,bool_i in enumerate(clf_quality)
                 if(bool_i==1.0)]
 
-def diagonal_criterion(quality):
-    diag=np.diagonal(quality)
-    diag[diag<1.0]==0
-    return diag
+
 
 def mean_criterion(quality):
     clf_quality=np.mean(quality,axis=1)
