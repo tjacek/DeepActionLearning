@@ -1,4 +1,5 @@
 import numpy as np
+import sklearn
 import ensemble.data,ensemble.tools,basic,utils
 import ensemble.outliner
 
@@ -48,8 +49,13 @@ def correlation_acc(clf_acc,feats_quality):
     X=np.stack([clf_acc,feats_quality])
     return np.corrcoef(X)[0][1]
 
-
-
+def resiudals(clf_acc,feats_quality):
+    clf_acc,feats_quality=np.array(clf_acc), np.array(feats_quality)
+    regr=sklearn.linear_model.LinearRegression()
+    feats_quality=feats_quality[:,np.newaxis]
+    regr.fit(feats_quality,clf_acc)
+    pred_acc=regr.predict(feats_quality)
+    return np.mean(np.abs( clf_acc-pred_acc))
 
 def clf_quality(dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
@@ -84,8 +90,8 @@ def mean_criterion(quality):
 #    return quality[:,hardest_cat]
 
 def mean_cat(quality):
-    print(np.amin( quality,axis=0))
-    print(np.amin( quality,axis=1)  )
+#    print(np.amin( quality,axis=0))
+#    print(np.amin( quality,axis=1)  )
     return np.mean(quality,axis=1)
 
 #def select_feats(in_path,out_path,n_feats=100):
