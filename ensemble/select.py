@@ -33,12 +33,21 @@ class DatasetSelector(object):
     def __call__(self,datasets):
         return [datasets[i] for i in self.allowed_list]
 
-def make_data_selector(dict_arg,detector_path,clf_selection=None):
-    if(not clf_selection):
-        clf_selection=mean_criterion
+def make_data_selector(dict_arg,detector_path,
+                        clf_critterion=None,selection_type=15):
+    if(not clf_critterion):
+        clf_critterion=diagonal_criterion
     inliners_matrix=feats_inliners(dict_arg,detector_path)
-    allowed_list=clf_selection(inliners_matrix)
+    raw_quality=clf_critterion(inliners_matrix)
+    if(type(selection_type)==int):
+        allowed_list=np.argsort(raw_quality)[selection_type:]
+    else:
+        allowed_list=[ i for i,bool_i in enumerate(raw_quality)
+                        if(bool_i==1.0)]
     return DatasetSelector(allowed_list)
+
+def mean_cat(quality):
+    return np.mean(quality,axis=1)
 
 def diagonal_criterion(quality):
     diag=np.diagonal(quality)
@@ -73,26 +82,6 @@ def feats_inliners(dict_arg,detector_path):
                 for i,train_i in enumerate(train_data)]
                     for cat_j in range(n_cats)]
     return np.array(quality)
-
-def diagonal_selection(quality):
-    clf_quality=diagonal_criterion(quality)
-    return [ i for i,bool_i in enumerate(clf_quality)
-                if(bool_i==1.0)]
-
-
-
-def mean_criterion(quality):
-    clf_quality=np.mean(quality,axis=1)
-    return np.argsort(clf_quality)[15:]
-#def std_cat(quality):
-#    cat_std=np.mean(quality,axis=0)
-#    hardest_cat=np.argmax(cat_std)
-#    return quality[:,hardest_cat]
-
-def mean_cat(quality):
-#    print(np.amin( quality,axis=0))
-#    print(np.amin( quality,axis=1)  )
-    return np.mean(quality,axis=1)
 
 #def select_feats(in_path,out_path,n_feats=100):
 #    deep_paths=utils.bottom_files(in_path)
