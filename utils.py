@@ -1,6 +1,7 @@
 import os,os.path,re,pickle
 import numpy as np 
 from sets import Set 
+import sklearn
 
 def make_dir(path):
     if(not os.path.isdir(path)):
@@ -89,4 +90,14 @@ def all_equal(items,value):
 def one_hot(cat_i,n):
     vote_i=np.zeros((n,))
     vote_i[cat_i]=1
-    return vote_i        
+    return vote_i 
+
+def linear_reg(clf_acc,feats_quality,pred=False):
+    clf_acc,feats_quality=np.array(clf_acc), np.array(feats_quality)
+    regr=sklearn.linear_model.LinearRegression()
+    feats_quality=feats_quality[:,np.newaxis]
+    regr.fit(feats_quality,clf_acc)
+    if(pred):
+        return regr,regr.predict(feats_quality)
+    else:    
+        return regr  

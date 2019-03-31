@@ -1,7 +1,7 @@
 import numpy as np
-import sklearn
 import ensemble.data,ensemble.tools,basic,utils
 import ensemble.outliner
+import plot
 
 class ClfStats(object):
     def __init__(self, clf_quality=None,inspect_acc=None):
@@ -40,7 +40,8 @@ def make_data_selector(dict_arg,detector_path,
     inliners_matrix=feats_inliners(dict_arg,detector_path)
     raw_quality=clf_critterion(inliners_matrix)
     if(type(selection_type)==int):
-        allowed_list=np.argsort(raw_quality)[selection_type:]
+        n_cls= raw_quality.shape[0] - selection_type
+        allowed_list=np.argsort(raw_quality)[n_cls:]
     else:
         allowed_list=[ i for i,bool_i in enumerate(raw_quality)
                         if(bool_i==1.0)]
@@ -59,10 +60,8 @@ def correlation_acc(clf_acc,feats_quality):
     return np.corrcoef(X)[0][1]
 
 def resiudals(clf_acc,feats_quality):
-    clf_acc,feats_quality=np.array(clf_acc), np.array(feats_quality)
-    regr=sklearn.linear_model.LinearRegression()
-    feats_quality=feats_quality[:,np.newaxis]
-    regr.fit(feats_quality,clf_acc)
+    #regr=utils.linear_reg(clf_acc,feats_quality)
+    regr=plot.show_regres(feats_quality,clf_acc)
     pred_acc=regr.predict(feats_quality)
     return np.mean(np.abs( clf_acc-pred_acc))
 

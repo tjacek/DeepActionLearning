@@ -56,3 +56,10 @@ def plot_embedding(X,y,title="plot",color_helper=None,show=True):
     if(show):
         plt.show()
     return plt
+
+def show_regres(X,y):
+    regr,y_pred=utils.linear_reg(y,X,pred=True)
+    plt.scatter(X,y,color='black')
+    plt.plot(X,y_pred,color='blue',linewidth=3)
+    plt.show()
+    return regr
