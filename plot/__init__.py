@@ -29,10 +29,9 @@ def save_datasets(in_path,out_path,make_helper=None):
 
 def show_dataset(in_path,title="plot"):
     dataset=basic.read_dataset(in_path)
-    color_helper=CatColors(np.unique(dataset.y))
+    color_helper=plot.colors.CatColors(np.unique(dataset.y))
     X,y=dataset.X,dataset.y
     X=TSNE(n_components=2,perplexity=30).fit_transform(X)
-    print(X.shape)
     plot_embedding(X,y,title=title,color_helper=color_helper,show=True)
 
 def plot_embedding(X,y,title="plot",color_helper=None,show=True):
@@ -41,6 +40,9 @@ def plot_embedding(X,y,title="plot",color_helper=None,show=True):
     X = (X - x_min) / (x_max - x_min)
    
     color_helper=color_helper if(color_helper) else lambda i,y_i:0
+    if(type(color_helper)==np.ndarray):
+        color_helper= plot.colors.ArrayColors(color_helper) 
+
     plt.figure()
     ax = plt.subplot(111)
 
@@ -62,4 +64,4 @@ def show_regres(X,y):
     plt.scatter(X,y,color='black')
     plt.plot(X,y_pred,color='blue',linewidth=3)
     plt.show()
-    return regr
+    return regr,y_pred

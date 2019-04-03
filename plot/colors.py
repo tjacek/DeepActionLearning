@@ -1,6 +1,13 @@
 import numpy as np
 import random
-import basic,ensemble.outliner
+import basic,ensemble.pick.outliner
+
+class ArrayColors(object):
+    def __init__(self,points):
+        self.points=points
+
+    def __call__(self,i,y_i):
+        return self.points[i]
 
 class CatColors(object):
     def __init__(self,cats):
@@ -57,5 +64,5 @@ class MakeOutlinerColors(object):
         self.index= (self.index+1) % self.n_cats
 
 def built_make_outlines(in_path):
-    outliners=ensemble.outliner.read_detectors(in_path)
+    outliners=ensemble.pick.outliner.read_detectors(in_path)
     return MakeOutlinerColors(outliners.outliner_detectors)
