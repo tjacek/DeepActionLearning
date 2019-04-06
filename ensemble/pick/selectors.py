@@ -26,6 +26,11 @@ def make_data_selector(dict_arg,detector_path,
         n_cls= raw_quality.shape[0] - selection_type
         allowed_list=np.argsort(raw_quality)[n_cls:]
     else:
-        allowed_list=[ i for i,bool_i in enumerate(raw_quality)
-                        if(bool_i==1.0)]
+        allowed_list=binary_list(raw_quality)
     return DatasetSelector(allowed_list)
+
+def binary_list(raw_quality,pred=None):
+    if(not pred):
+        pred=lambda bool_i: bool_i==1.0
+    return [ i for i,bool_i in enumerate(raw_quality)
+                if(pred(bool_i))]

@@ -1,6 +1,6 @@
 import numpy as np
 from collections import Counter
-import ensemble.data
+import ensemble.data,ensemble.pick.selectors
 import ensemble.tools,ensemble.inspect
 import utils
 
@@ -8,6 +8,8 @@ class Ensemble(object):
     def __init__(self,clf=None,prob=False,selector=None):
         self.clf=clf if(clf) else tools.logistic_cls
         self.prob=prob
+        if(type(selector)==list):
+            selector=ensemble.pick.selectors.DatasetSelector(selector)
         self.selector=selector
 
     def __call__(self,handcrafted_path=None,deep_path=None,feats=(250,100),show=True):
