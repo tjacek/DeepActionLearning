@@ -23,11 +23,14 @@ def make_data_selector(dict_arg,detector_path,
     inliners_matrix=feats_inliners(dict_arg,detector_path)
     raw_quality=clf_critterion(inliners_matrix)
     if(type(selection_type)==int):
-        n_cls= raw_quality.shape[0] - selection_type
-        allowed_list=np.argsort(raw_quality)[n_cls:]
+        allowed_list=sort_list(raw_quality,selection_type)
     else:
         allowed_list=binary_list(raw_quality)
     return DatasetSelector(allowed_list)
+
+def sort_list(raw_quality,n_clfs=5):
+    n_cls= raw_quality.shape[0] - n_clfs
+    return np.argsort(raw_quality)[n_cls:]
 
 def binary_list(raw_quality,pred=None):
     if(not pred):
