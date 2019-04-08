@@ -1,45 +1,32 @@
 import numpy as np
 import ensemble.data,ensemble.tools,basic,utils
-import ensemble.outliner
+import ensemble.pick.outliner
 import plot
 
-class ClfStats(object):
-    def __init__(self, clf_quality=None,inspect_acc=None):
-        if(not clf_quality):
-            clf_quality=diagonal_criterion
-        self.clf_quality = clf_quality
-        if(not inspect_acc):
-            inspect_acc=correlation_acc
-        self.inspect_acc=inspect_acc
+class WeightedCrit(object):
+    def __init__(self, crit,weights):
+        if(type(weights)==list):
+            weights=np.array(weights)   
+        self.crit = crit
+        self.weights=weights
 
-    def __call__(self,clf_acc,dict_arg,detector_path):
-        inliners_matrix=feats_inliners(dict_arg,detector_path)
-        feats_quality=self.clf_quality(inliners_matrix)
-        return self.inspect_acc(clf_acc,feats_quality)
-
+    def __call__(self,raw_quality):
+        quality=[self.weights*raw_i for raw_i in raw_quality]
+        return self.crit(quality)
+        
 def mean_cat(quality):
+    #quality[quality<1.0]=0.0
     return np.mean(quality,axis=1)
 
-def l2_mean_cat(quality):
-    weights=np.mean(quality,axis=0)
-    weights[weights>0.5]=0.0
-    weights[weights>0]=1.0
-    return weights*np.mean(quality,axis=1)
+def w_mean_cat(quality):    
+    weights=(np.amax(quality,axis=0)-np.amin(quality,axis=0))
+    return np.mean(quality,axis=1) *weights
+    #return np.median(quality,axis=1)
 
 def diagonal_criterion(quality):
     diag=np.diagonal(quality)
     diag[diag<1.0]==0
     return diag
-
-def correlation_acc(clf_acc,feats_quality):
-    X=np.stack([clf_acc,feats_quality])
-    return np.corrcoef(X)[0][1]
-
-def resiudals(clf_acc,feats_quality):
-    #regr=utils.linear_reg(clf_acc,feats_quality)
-    regr,pred_acc=plot.show_regres(feats_quality,clf_acc)
-    #pred_acc=regr.predict(feats_quality)
-    return np.mean(np.abs( clf_acc-pred_acc))
 
 def clf_quality(dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
@@ -47,11 +34,15 @@ def clf_quality(dict_arg,detector_path,quality_metric=None):
     inliners_matrix=feats_inliners(dict_arg,detector_path)
     return quality_metric(inliners_matrix)
 
+def save_outliner_matrix(dict_arg,detector_path,out_path):
+    inliners_matrix=feats_inliners(dict_arg,detector_path)
+    utils.save_matrix(out_path,inliners_matrix)
+
 def feats_inliners(dict_arg,detector_path):
     datasets,n_feats=ensemble.data.get_datasets(dict_arg,None,None)
     train_data=[dataset_i.split()[0] 
                     for dataset_i in datasets]
-    detectors=ensemble.outliner.read_detectors(detector_path)
+    detectors=ensemble.pick.outliner.read_detectors(detector_path)
     n_cats=len(datasets)
     quality=[[ detectors.cat_separation(i,train_i,cat_j+1)
                 for i,train_i in enumerate(train_data)]
