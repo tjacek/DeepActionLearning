@@ -8,7 +8,7 @@ class Ensemble(object):
     def __init__(self,clf=None,prob=False,selector=None):
         self.clf=clf if(clf) else tools.logistic_cls
         self.prob=prob
-        if(type(selector)==list):
+        if(type(selector)==list or type(selector)==np.ndarray):
             selector=ensemble.pick.selectors.DatasetSelector(selector)
         self.selector=selector
 
