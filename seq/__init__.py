@@ -53,12 +53,13 @@ class Action(object):
     def __len__(self):
         return len(self.img_seq)
     
-    def __call__(self,fun,whole_seq=True):
-        print(self.name)
+    def __call__(self,fun,whole_seq=True,feats=False):
+        #print(self.name)
+        img_seq=self.as_features() if(feats) else self.img_seq
         if(whole_seq):
-            new_seq=fun(self.img_seq)
+            new_seq=fun(img_seq)
         else:
-            new_seq=[ fun(img_i) for img_i in self.img_seq]
+            new_seq=[ fun(img_i) for img_i in img_seq]
         return Action(new_seq,self.name,self.cat,self.person)	
     
     def clone(self,img_seq):

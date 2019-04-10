@@ -27,7 +27,7 @@ def ts_preproc(action_i):
     return np.expand_dims(array_img,0)
 
 class LoadData(object):
-    def __init__(self,as_dataset="persons"):
+    def __init__(self,as_dataset="persons",preproc=None):
         img_seq=True
         if(as_dataset=="persons"):
             img_seq=True
@@ -43,9 +43,13 @@ class LoadData(object):
             as_dataset=unsuper_data
         self.read_actions=seq.io.build_action_reader(img_seq=img_seq,as_dict=False)
         self.as_dataset=as_dataset
+        self.preproc=preproc
 
     def __call__(self,in_path):
         actions=self.read_actions(in_path)
+        if(self.preproc):
+            actions=[ action_i(self.preproc,whole_seq=False,feats=True) 
+                        for action_i in actions]
         train,test=standard_split(actions)
         X_train,y_train=self.as_dataset(train)
         X_test,y_test=self.as_dataset(test)
@@ -87,11 +91,11 @@ def time_series_imgs(actions):
     return np.array(X),cats_to_int(y)
 
 def img_preproc(in_path,out_path,transform,n_frames=4):
-    frame_preproc=deep.preproc.FramePreproc(n_frames)
+    frame_preproc=FramePreproc(n_frames)
     def img_dec(img_seq):
         img_seq=frame_preproc(img_seq)
         img_seq=transform(img_seq)
-        return frame_preproc.recover(rec_seq)
+        return frame_preproc.recover(img_seq)
     seq.io.transform_actions(in_path,out_path,img_dec,
                       img_in=True,img_out=True,whole_seq=True)
 
