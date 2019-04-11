@@ -3,10 +3,10 @@ from sklearn.metrics import classification_report
 import seq.io,utils
 import basic.extr
 import deep.reader,deep.train,deep.preproc
-import deep.convnet,deep.autoconv,os,feats.preproc
+import deep.convnet,deep.autoconv,os,preproc.sampling
 
 def train_ts_ensemble(in_path,out_path,num_iter=1500):
-    load_data=deep.preproc.LoadData("time_series",preproc=feats.preproc.SplineUpsampling())
+    load_data=deep.preproc.LoadData("time_series",preproc=preproc.sampling.SplineUpsampling())
     all_in_paths=utils.bottom_dirs(in_path)
     all_out_paths=utils.switch_paths(out_path,all_in_paths)
     for in_path_i,out_path_i in zip(all_in_paths,all_out_paths):
