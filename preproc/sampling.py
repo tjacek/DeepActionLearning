@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 from scipy.interpolate import CubicSpline
 import seq.io,seq.tools,utils
-import basic.preproc
 
 class SplineUpsampling(object):
     def __init__(self,new_size=128):
@@ -12,12 +11,12 @@ class SplineUpsampling(object):
         old_size=feat_i.shape[0]
         old_x=np.arange(old_size)
         old_x=old_x.astype(float)  
-    	step=float(self.new_size)/float(old_size)
+        step=float(self.new_size)/float(old_size)
         old_x*=step  	
-    	cs=CubicSpline(old_x,feat_i)
-    	new_x=np.arange(self.new_size)
-    	print(new_x.shape)
-    	return cs(new_x)
+        cs=CubicSpline(old_x,feat_i)
+        new_x=np.arange(self.new_size)
+        print(new_x.shape)
+        return cs(new_x)
 
 def as_imgs(in_path,out_path):
     read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
@@ -33,5 +32,5 @@ def as_imgs(in_path,out_path):
 #seq.io.normalize("../wrap/mra_preproc/raw/all","../wrap/mra_preproc/norm/all")
 #spline_upsampling=basic.preproc.Preproc(SplineUpsampling())
 #spline_upsampling("../wrap/mra_preproc/norm/max_z","../wrap/mra_preproc/up/max_z")
-seq.tools.concat("../wrap/mra_preproc/up/all","../wrap/mra_preproc/up/max_z/", "../wrap/mra_preproc/full")
+#seq.tools.concat("../wrap/mra_preproc/up/all","../wrap/mra_preproc/up/max_z/", "../wrap/mra_preproc/full")
 #as_imgs('../series/up_norm_all','../series/img_actions')

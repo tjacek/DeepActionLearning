@@ -60,6 +60,8 @@ class Action(object):
             new_seq=fun(img_seq)
         else:
             new_seq=[ fun(img_i) for img_i in img_seq]
+        if(feats):
+            new_seq=np.array(new_seq).T
         return Action(new_seq,self.name,self.cat,self.person)	
     
     def clone(self,img_seq):
