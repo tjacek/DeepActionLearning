@@ -6,8 +6,8 @@ import basic.group,preproc.sampling
 def group_ts_extractor(in_path,nn_path,out_path):
     def extr_helper(in_path_i,out_path_i):
         nn_path_i=nn_path+'/'+in_path_i.split("/")[-1]
-        ts_extractor=build_ts_extractor(nn_path)
-        ts_extractor(in_path,out_path)
+        ts_extractor=build_ts_extractor(nn_path_i)
+        ts_extractor(in_path_i,out_path_i)
     grup_fun=basic.group.GroupFun(extr_helper)
     grup_fun(nn_path,out_path)
 

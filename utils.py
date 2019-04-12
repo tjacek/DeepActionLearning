@@ -1,6 +1,5 @@
 import os,os.path,re,pickle
 import numpy as np 
-from sets import Set 
 import sklearn
 
 def make_dir(path):
@@ -95,7 +94,7 @@ def one_hot(cat_i,n):
 def save_matrix(name,matrix):
     name=name.split(".")[0]
     name+=".csv"
-    np.savetxt("mra.csv",quality,fmt="%.4f",delimiter=",")
+    np.savetxt(name,matrix,fmt="%.4f",delimiter=",")
 
 def linear_reg(clf_acc,feats_quality,pred=False):
     clf_acc,feats_quality=np.array(clf_acc), np.array(feats_quality)
