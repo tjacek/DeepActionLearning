@@ -21,10 +21,16 @@ class FramePreproc(object):
         return np.array([np.concatenate(x_i,axis=0) 
                             for x_i in X])
 
-def ts_preproc(action_i):
-    array_img=action_i.as_array()
-    array_img=np.expand_dims(array_img,0)
-    return np.expand_dims(array_img,0)
+class TSPreproc(object):
+    def __init__(self,preproc_fun=None):
+        self.preproc_fun=preproc_fun
+
+    def ts_preproc(action_i):
+        if(self.preproc_fun):
+            action_i=action_i(self.preproc_fun,whole_seq=False,feats=True) 
+        array_img=action_i.as_array()
+        array_img=np.expand_dims(array_img,0)
+        return np.expand_dims(array_img,0)
 
 class LoadData(object):
     def __init__(self,as_dataset="persons",preproc=None):

@@ -22,7 +22,7 @@ def group_extractor(in_path,nn_path,out_path):
 def build_ts_extractor(nn_path):
     nn_reader=deep.reader.NNReader()
     conv=nn_reader(nn_path)
-    conv.preproc=deep.preproc.ts_preproc(preproc.sampling.SplineUpsampling())
+    conv.preproc=deep.preproc.TSPreproc(preproc.sampling.SplineUpsampling())
     return basic.extr.TimeSeriesExtractor(conv,feat_fun=False)
 
 class FrameExtractorFactory(object):
