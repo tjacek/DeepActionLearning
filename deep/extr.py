@@ -9,7 +9,7 @@ def group_ts_extractor(in_path,nn_path,out_path):
         ts_extractor=build_ts_extractor(nn_path_i)
         ts_extractor(in_path_i,out_path_i)
     grup_fun=basic.group.GroupFun(extr_helper)
-    grup_fun(nn_path,out_path)
+    grup_fun(in_path,out_path)
 
 def group_extractor(in_path,nn_path,out_path):
     extractor_factory=FrameExtractorFactory()

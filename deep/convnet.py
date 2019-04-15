@@ -12,7 +12,7 @@ class Convet(deep.NeuralNetwork):
         super(Convet,self).__init__(hyperparams,out_layer)
         self.in_var=in_var
         self.target_var=target_var
-        self.__features__=theano.function([in_var],features_pred)
+        self.__features__=theano.function([in_var],features_pred,allow_input_downcast=True)
         self.pred=theano.function([in_var], pred,allow_input_downcast=True)        
         self.loss=theano.function([in_var,target_var], loss,allow_input_downcast=True)
         self.updates=theano.function([in_var, target_var], loss, 

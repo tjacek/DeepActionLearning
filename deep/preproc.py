@@ -25,7 +25,7 @@ class TSPreproc(object):
     def __init__(self,preproc_fun=None):
         self.preproc_fun=preproc_fun
 
-    def ts_preproc(action_i):
+    def __call__(self,action_i):
         if(self.preproc_fun):
             action_i=action_i(self.preproc_fun,whole_seq=False,feats=True) 
         array_img=action_i.as_array()
