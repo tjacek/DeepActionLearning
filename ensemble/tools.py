@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_recall_fscore_support     #accuracy_score,precision_score,recall_score,f1_score
+from sklearn.metrics import precision_recall_fscore_support,accuracy_score#,precision_score,recall_score,f1_score
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 import seaborn as sn
@@ -26,9 +26,9 @@ def rfe_selection(dataset,n=100):
     svc = SVC(kernel='linear',C=1)
     rfe = RFE(estimator=svc,n_features_to_select=n,step=1)
     rfe.fit(dataset.X, dataset.y)
+    old_dim=dataset.dim()
     dataset.X= rfe.transform(dataset.X)
-    print("New dim: ")
-    print(dataset.X.shape)
+    print("Old dim %d New dim %d)" % (old_dim,dataset.dim() ))
     return dataset  
 
 def show_result(y_true,y_pred,dataset=None):
@@ -50,7 +50,7 @@ def show_errors(y_true,y_pred,names):
     print(error_descs)
 
 def compute_score(y_true,y_pred,as_str=True):
-    precision,recall,f1,support=precision_recall_fscore_support(y_true,y_pred,average='macro')
+    precision,recall,f1,support=precision_recall_fscore_support(y_true,y_pred,average='micro')
     if(as_str):
         return "%0.4f,%0.4f,%0.4f,%0.4f" % (precision,recall,precision,f1)
     else:
