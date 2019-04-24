@@ -39,7 +39,7 @@ def save_outliner_matrix(dict_arg,detector_path,out_path):
     utils.save_matrix(out_path,inliners_matrix)
 
 def feats_inliners(dict_arg,detector_path):
-    datasets,n_feats=ensemble.data.get_datasets(dict_arg,None,None)
+    datasets,n_feats=ensemble.data.get_datasets(**dict_arg)#,None,None)
     train_data=[dataset_i.split()[0] 
                     for dataset_i in datasets]
     detectors=ensemble.pick.outliner.read_detectors(detector_path)
