@@ -1,6 +1,6 @@
 import numpy as np
 import ensemble.data,ensemble.tools,basic,utils
-import ensemble.pick.outliner
+import ensemble.pick.outliner,ensemble.pick
 import plot
 
 class WeightedCrit(object):
@@ -27,6 +27,14 @@ def diagonal_criterion(quality):
     diag=np.diagonal(quality)
     diag[diag<1.0]==0
     return diag
+
+def get_cls_selector(dict_arg,detector_path,metric="weight",n_cls=3):
+    if(not metric):
+        metric=mean_cat
+    if(metric=="weight"):
+        metric=w_mean_cat
+    quality=clf_quality(dict_arg,detector_path,quality_metric=metric)
+    return ensemble.pick.selectors.sort_list(quality,n_cls)
 
 def clf_quality(dict_arg,detector_path,quality_metric=None):
     if(not quality_metric):
