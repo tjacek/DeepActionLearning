@@ -67,6 +67,7 @@ def to_train_ensemble(datasets):
     return [data_i.split()[0].X for data_i in datasets]
 
 def feat_selection(handcrafted_path,deep_path,out_path,feats=100):
+    utils.make_dir(out_path)
     datasets,n_feats=get_datasets(handcrafted_path,deep_path,feats)
     paths=utils.bottom_files(deep_path)
     all_out_paths=utils.switch_paths(out_path,paths)
