@@ -50,11 +50,12 @@ def show_errors(y_true,y_pred,names):
     print(error_descs)
 
 def compute_score(y_true,y_pred,as_str=True):
-    precision,recall,f1,support=precision_recall_fscore_support(y_true,y_pred,average='micro')
+    precision,recall,f1,support=precision_recall_fscore_support(y_true,y_pred,average='weighted')
+    accuracy=accuracy_score(y_true,y_pred)
     if(as_str):
-        return "%0.4f,%0.4f,%0.4f,%0.4f" % (precision,recall,precision,f1)
+        return "%0.4f,%0.4f,%0.4f,%0.4f" % (accuracy,precision,recall,f1)
     else:
-        return (precision,recall,precision,f1)
+        return (accuracy,precision,recall,f1)
 
 def heat_map(conf_matrix):
     dim=conf_matrix.shape
