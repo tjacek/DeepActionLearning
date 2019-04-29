@@ -6,13 +6,16 @@ def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None):
     if(type(feature_sets)==str):
         feature_sets=utils.bottom_files(feature_sets)
         feature_sets=[ feature_i.split('/')[-1] for feature_i in feature_sets]
-    arg_dicts=[]
     feature_sets+=[ feature_sets[:i] for i in range(1,len(feature_sets)+1)]
-    for feature_set_i in feature_sets:
-        dict_i=arg_other.copy()
-        dict_i["common_paths"]=feature_set_i if(type(feature_set_i)==list ) else [feature_set_i]
-        arg_dicts.append(dict_i)
-    multi_experiment(arg_dicts,ens,out_path)
+    print(feature_sets)
+    arg_other["common_paths"]=feature_sets
+    multi_experiment([arg_other],ens,out_path)
+    #arg_dicts=[]
+    #for feature_set_i in feature_sets:
+    #    dict_i=arg_other.copy()
+    #    dict_i["common_paths"]=feature_set_i if(type(feature_set_i)==list ) else [feature_set_i]
+    #    arg_dicts.append(dict_i)
+    #multi_experiment(arg_dicts,ens,out_path)
 
 def multi_experiment(arg_dicts,ens=None,out_path="exp"):
     if(not ens):
@@ -38,6 +41,7 @@ def simple_experiment(dir_path,common_paths,deep_paths,feats,ens,legend=True):
             score_i,n_feats_i=get_avg_ensemble(full_path_i,deep_paths,feats,ensemble)
         else:
             score_i,n_feats_i=ens(full_path_i,deep_paths,feats,show=False)
+            print(score_i)
         return '%s,%s,%d,%s' % (name_i,desc,n_feats_i,score_i)
     return lines+[line_helper(feature_set_i) for feature_set_i in common_paths]
 
