@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn import preprocessing
 import basic.instances,utils
+import os.path
 
 class Dataset(object):
     def __init__(self,X,y,persons,names):
@@ -56,6 +57,8 @@ class Dataset(object):
         self.X[np.isnan(self.X)]=1.0
         
 def read_dataset(in_path):
+    if(type(in_path)!=list and os.path.isdir(in_path)):
+        in_path=utils.bottom_files(in_path)
     if(type(in_path)==list):
         datasets=[read_dataset(path_i) for path_i in in_path]
         return unify_datasets(datasets)
