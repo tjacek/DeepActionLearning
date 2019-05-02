@@ -4,9 +4,10 @@ import basic.instances
 class TimeSeriesExtractor(object):
     def __init__(self,get_feats, feat_fun=True):
         self.get_feats=get_feats
-        self.feat_fun=feat_funimg_seq
+        self.feat_fun=feat_fun
 
     def __call__(self,in_path,out_path):
+        print(in_path)
         read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False)
         actions=read_actions(in_path)
         def action_helper(action_i):
