@@ -1,8 +1,9 @@
 import numpy as np,scipy.stats
-import seq.io,basic.group,basic.extr
+import seq.io,basic.group,basic.extr,utils
 
 
 def group_btf(in_path,out_path):
+    utils.make_dir(out_path)
     ts_extr=basic.extr.TimeSeriesExtractor(basic_stats, feat_fun=True)  
     grup_fun=basic.group.GroupFun(ts_extr,dirs=True)
     grup_fun(in_path,out_path)    
