@@ -1,5 +1,11 @@
 import numpy as np
-import ensemble,utils#,ensemble.outliner
+import ensemble,utils,ensemble.tools
+
+def build_ensemble(dataset="?",clf_type="SVC"):
+    clf=ensemble.tools.SVC_cls if(clf_type="SVC") else None
+    ens=ensemble.Ensemble(clf)
+    ens_name= dataset+"_"+clf_type+".csv"
+    return clf,ens_name
 
 def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None):
     arg_other['dir_path']=feature_sets
@@ -10,12 +16,6 @@ def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None):
     print(feature_sets)
     arg_other["common_paths"]=feature_sets
     multi_experiment([arg_other],ens,out_path)
-    #arg_dicts=[]
-    #for feature_set_i in feature_sets:
-    #    dict_i=arg_other.copy()
-    #    dict_i["common_paths"]=feature_set_i if(type(feature_set_i)==list ) else [feature_set_i]
-    #    arg_dicts.append(dict_i)
-    #multi_experiment(arg_dicts,ens,out_path)
 
 def multi_experiment(arg_dicts,ens=None,out_path="exp"):
     if(not ens):
@@ -119,8 +119,3 @@ def dict_experiment(arg_dict,clf_type,out_path):
     dir_path,common_paths,deep_paths,feats=arg_dict['dir'],arg_dict['common'],arg_dict['deep'],arg_dict['feats']
     lines=simple_experiment(dir_path,common_paths,deep_paths,feats,ens)
     to_csv(lines,out_path)
-
-
-
-
-
