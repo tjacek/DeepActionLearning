@@ -1,9 +1,9 @@
 import numpy as np
 import ensemble,utils,ensemble.tools
 
-def build_ensemble(dataset="?",clf_type="SVC"):
+def build_ensemble(dataset="?",clf_type="SVC",selector=None):
     clf=ensemble.tools.SVC_cls if(clf_type=="SVC") else None
-    ens=ensemble.Ensemble(clf)
+    ens=ensemble.Ensemble(clf,selector=selector)
     ens_name= dataset+"_"+clf_type+".csv"
     return clf,ens_name
 
