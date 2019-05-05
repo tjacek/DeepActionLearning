@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
-import basic
-from sets import Set
+import basic,sys
+if(sys.version_info[0]<3):
+    from sets import Set
 from sklearn.manifold import TSNE
 import utils,plot.colors
 
@@ -27,9 +28,11 @@ def save_datasets(in_path,out_path,make_helper=None):
         plt_i=plot_embedding(X,y,title=name_i,color_helper=color_helper,show=False)
         plt.savefig(out_path_i)
 
-def show_dataset(in_path,title="plot"):
+def show_dataset(in_path,title="plot",split=True):
     dataset=basic.read_dataset(in_path)
-    color_helper=plot.colors.CatColors(np.unique(dataset.y))
+    if(split):
+        dataset=dataset.split()[0]
+    color_helper= plot.colors.CatColors(np.unique(dataset.y))
     X,y=dataset.X,dataset.y
     X=TSNE(n_components=2,perplexity=30).fit_transform(X)
     plot_embedding(X,y,title=title,color_helper=color_helper,show=True)
@@ -39,9 +42,9 @@ def plot_embedding(X,y,title="plot",color_helper=None,show=True):
     x_min, x_max = np.min(X, 0), np.max(X, 0)
     X = (X - x_min) / (x_max - x_min)
    
-    color_helper=color_helper if(color_helper) else lambda i,y_i:0
     if(type(color_helper)==np.ndarray):
         color_helper= plot.colors.ArrayColors(color_helper) 
+    color_helper=color_helper if(color_helper) else lambda i,y_i:0
 
     plt.figure()
     ax = plt.subplot(111)
