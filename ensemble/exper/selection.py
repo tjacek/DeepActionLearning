@@ -21,6 +21,6 @@ class SelectionExper(object):
         return ens_i(show=False,**ens_arg)[0][0]
 
     def get_ensemble(self,n_cls):
-        quality=clf_quality(**self.quality_args)
+        quality=ensemble.pick.clf_quality(**self.quality_args)
         allowed_list=ensemble.pick.selectors.sort_list(quality,n_cls)
         return ensemble.Ensemble(clf,selector=allowed_list)
