@@ -7,7 +7,7 @@ class SelectionExper(object):
             metric=ensemble.pick.mean_cat
         self.clf=clf
         self.quality_args={ 'dict_arg':dict_arg, 'detector_path':detector_path,
-                            'metric':metric}
+                            'quality_metric':metric}
     
     def __call__(self,ens_arg,n_datasets=20):
         x=range(n_datasets+1)[1:]
@@ -23,4 +23,4 @@ class SelectionExper(object):
     def get_ensemble(self,n_cls):
         quality=ensemble.pick.clf_quality(**self.quality_args)
         allowed_list=ensemble.pick.selectors.sort_list(quality,n_cls)
-        return ensemble.Ensemble(clf,selector=allowed_list)
+        return ensemble.Ensemble(self.clf,selector=allowed_list)
