@@ -13,7 +13,10 @@ class SelectionExper(object):
         x=range(n_datasets+1)[1:]
         y=[self.single_exp(ens_arg,x_i) for x_i in x ]
         plt.plot(x,y)
-        plt.show() 
+        plt.xlabel("Accuracy")
+        plt.ylabel("Number of classifiers")
+        plt.show()
+
         return y
 
     def single_exp(self,ens_arg,x_i):
