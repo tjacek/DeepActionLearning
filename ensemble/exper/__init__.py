@@ -1,11 +1,12 @@
 import numpy as np
 import ensemble,utils,ensemble.tools
+import ensemble.exper.simple
 
 def build_ensemble(dataset="?",clf_type="SVC",selector=None):
     clf=ensemble.tools.SVC_cls if(clf_type=="SVC") else None
     ens=ensemble.Ensemble(clf,selector=selector)
     ens_name= dataset+"_"+clf_type+".csv"
-    return clf,ens_name
+    return ens,ens_name
 
 def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None):
     arg_other['dir_path']=feature_sets
@@ -22,7 +23,7 @@ def multi_experiment(arg_dicts,ens=None,out_path="exp"):
         ens=ensemble.Ensemble()
     lines=[]
     for arg_dict_i in arg_dicts:
-        lines+=simple_experiment(ens=ens,**arg_dict_i)
+        lines+=ensemble.exper.simple.simple_experiment(ens=ens,**arg_dict_i)
     to_csv(lines,out_path)
 
 def subset_eperiment(arg_dict,clf_type,out_path,cat_subsets,legend=True):
@@ -53,3 +54,8 @@ def dict_experiment(arg_dict,clf_type,out_path):
     dir_path,common_paths,deep_paths,feats=arg_dict['dir'],arg_dict['common'],arg_dict['deep'],arg_dict['feats']
     lines=simple_experiment(dir_path,common_paths,deep_paths,feats,ens)
     to_csv(lines,out_path)
+
+def to_csv(lines,out_path):
+    out_file=open(out_path,'w+')
+    out_file.write('\n'.join(lines))
+    out_file.close()

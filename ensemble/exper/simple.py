@@ -43,11 +43,6 @@ def get_name(feature_set_i):
         return '+'.join(feature_set_i)
     return "-"
 
-def to_csv(lines,out_path):
-    out_file=open(out_path,'w+')
-    out_file.write('\n'.join(lines))
-    out_file.close()
-
 def get_descritpion(deep_paths,feats):
     desc= "Yes" if(deep_paths) else "No"
     desc+= ",RFE" if(feats[0]) else ",None"
