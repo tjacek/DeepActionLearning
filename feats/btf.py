@@ -1,10 +1,10 @@
 import numpy as np,scipy.stats
 import seq.io,basic.group,basic.extr,utils
 
-def group_btf(in_path,out_path,basic=True):
+def group_btf(in_path,out_path,extended=True):
     utils.make_dir(out_path)
-    ts_stats= basic_stats if(basic) else extended_stats
-    ts_extr=basic.extr.TimeSeriesExtractor(basic_stats, feat_fun=True)  
+    ts_stats=extended_stats  if(extended) else basic_stats
+    ts_extr=basic.extr.TimeSeriesExtractor(ts_stats, feat_fun=True)  
     grup_fun=basic.group.GroupFun(ts_extr,dirs=True)
     grup_fun(in_path,out_path)    
 
