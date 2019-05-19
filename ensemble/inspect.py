@@ -2,6 +2,35 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 import ensemble,ensemble.tools
 
+def error_matrix(arg_dicts,test_ensemble=None):
+    def error_helper(y_true,pred_j,n_cats):
+        error_cat=np.zeros(n_cats)
+        for true_i,pred_ij in zip(y_true,pred_j):
+            if(true_i==pred_ij):
+                error_cat[pred_ij-1]+=1.0
+        return error_cat
+    err_matrix=matrix_template(error_helper,arg_dicts,test_ensemble)
+    print( np.amax(err_matrix,axis=0))
+
+def recall_matrix(arg_dicts,test_ensemble=None):
+    def recall_helper(y_true,pred_j,n_cats):
+        pred_by_cat=[[] for i in range(n_cats)]
+        for true_i,pred_ij in zip(y_true,pred_j):
+            pred_by_cat[pred_ij-1].append(true_i)
+        pred_indic=[ indic_vector(i+1,pred_i) 
+                        for i,pred_i in enumerate(pred_by_cat)]
+        return  np.round([ np.mean(pred_i) for pred_i in pred_indic],2)
+    matrix_template(error_helper,arg_dicts,test_ensemble)
+
+def matrix_template(helper_fun,arg_dicts,test_ensemble=None):
+    y_true,all_pred=get_preds(arg_dicts,test_ensemble)
+    n_cats=len(all_pred)
+    result_matrix=[helper_fun(y_true,all_pred[j],n_cats) 
+                    for j in range(n_cats)]
+    result_matrix=np.array(result_matrix)
+    ensemble.tools.heat_map(result_matrix)
+    return result_matrix
+
 def ensemble_matrix(arg_dicts,test_ensemble=None):
     y_true,all_pred=get_preds(arg_dicts,test_ensemble)
     all_pred_by_cat=[by_cat(y_true,pred_i) for pred_i in all_pred]
@@ -51,3 +80,9 @@ def indiv_votes(raw_votes):
                         for vote_i in raw_votes]
     indiv_acc=np.array(indiv_acc).T
     return indiv_acc
+
+def indic_vector(i,vector):
+    vector=np.array(vector)
+    vector[vector!=i]=0.0
+    vector[vector==i]=1.0
+    return vector
