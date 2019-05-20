@@ -24,9 +24,10 @@ def recall_matrix(arg_dicts,test_ensemble=None):
 
 def matrix_template(helper_fun,arg_dicts,test_ensemble=None):
     y_true,all_pred=get_preds(arg_dicts,test_ensemble)
-    n_cats=len(all_pred)
+    n_cats=max(y_true)#len(all_pred)
+    n_cls=len(all_pred)
     result_matrix=[helper_fun(y_true,all_pred[j],n_cats) 
-                    for j in range(n_cats)]
+                    for j in range(n_cls)]
     result_matrix=np.array(result_matrix)
     ensemble.tools.heat_map(result_matrix)
     return result_matrix
