@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -10,6 +11,7 @@ from matplotlib import offsetbox
 from sklearn.svm import SVC
 from sklearn.feature_selection import RFE
 import sklearn.grid_search as gs
+import scipy.special
 
 def SVC_cls():
     params=[{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],'C': [1, 10, 50,110, 1000]},
@@ -25,10 +27,13 @@ def rfe_selection(dataset,n=100):
         return dataset
     svc = SVC(kernel='linear',C=1)
     rfe = RFE(estimator=svc,n_features_to_select=n,step=1)
+    t0=time.time()
     rfe.fit(dataset.X, dataset.y)
     old_dim=dataset.dim()
+    t1=time.time()
+
     dataset.X= rfe.transform(dataset.X)
-    print("Old dim %d New dim %d)" % (old_dim,dataset.dim() ))
+    print("Old dim %d New dim %d time: %0.4f)" % (old_dim,dataset.dim(),(t1-t0) ))
     return dataset  
 
 def show_result(y_true,y_pred,dataset=None):
@@ -56,6 +61,16 @@ def compute_score(y_true,y_pred,as_str=True):
         return "%0.4f,%0.4f,%0.4f,%0.4f" % (accuracy,precision,recall,f1)
     else:
         return (accuracy,precision,recall,f1)
+
+def kl_div_matrix(dist_matrix,trans=False):
+    if(trans):
+        dist_matrix=dist_matrix.T
+    kl_matrix=[[ np.mean(scipy.special.kl_div(x_i,x_j))
+                    for x_j in dist_matrix]
+                        for x_i in dist_matrix]
+    kl_matrix=np.around(kl_matrix,2)
+    heat_map(kl_matrix)
+    return kl_matrix
 
 def heat_map(conf_matrix):
     dim=conf_matrix.shape
