@@ -65,7 +65,11 @@ def compute_score(y_true,y_pred,as_str=True):
 def kl_div_matrix(dist_matrix,trans=False):
     if(trans):
         dist_matrix=dist_matrix.T
-    kl_matrix=[[ np.mean(scipy.special.kl_div(x_i,x_j))
+    def kl_helper(x_i,x_j):
+        kl_array=scipy.special.kl_div(x_i,x_j)
+        kl_array[kl_array==np.inf]=0.0
+        return np.mean(kl_array)
+    kl_matrix=[[ kl_helper(x_i,x_j)
                     for x_j in dist_matrix]
                         for x_i in dist_matrix]
     kl_matrix=np.around(kl_matrix,2)
