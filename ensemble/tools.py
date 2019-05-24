@@ -12,6 +12,7 @@ from sklearn.svm import SVC
 from sklearn.feature_selection import RFE
 import sklearn.grid_search as gs
 import scipy.special
+from sklearn import decomposition
 
 def SVC_cls():
     params=[{'kernel': ['rbf'], 'gamma': [1e-3, 1e-4],'C': [1, 10, 50,110, 1000]},
@@ -72,11 +73,12 @@ def kl_div_matrix(dist_matrix,trans=False):
     kl_matrix=[[ kl_helper(x_i,x_j)
                     for x_j in dist_matrix]
                         for x_i in dist_matrix]
-    kl_matrix=np.around(kl_matrix,2)
+    kl_matrix=np.array(kl_matrix)
     heat_map(kl_matrix)
     return kl_matrix
 
 def heat_map(conf_matrix):
+    conf_matrix=np.around(conf_matrix,2)
     dim=conf_matrix.shape
     df_cm = pd.DataFrame(conf_matrix, range(dim[0]),range(dim[1]))
     sn.set(font_scale=1.0)#for label size
@@ -86,3 +88,8 @@ def heat_map(conf_matrix):
 def show_stats(indiv):
     stats=(np.amin(indiv),np.median(indiv),np.mean(indiv),np.amax(indiv))
     print("min:%f median:%f mean:%f max:%f" %  stats)
+
+def decorelate(matrix):
+    pca=decomposition.PCA()
+    pca.fit(matrix)
+    return pca.transform(matrix)
