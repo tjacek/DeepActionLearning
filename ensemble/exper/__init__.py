@@ -8,12 +8,14 @@ def build_ensemble(dataset="?",clf_type="SVC",selector=None):
     ens_name= dataset+"_"+clf_type+".csv"
     return ens,ens_name
 
-def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None):
+def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None,gen_feat=None):
     arg_other['dir_path']=feature_sets
     if(type(feature_sets)==str):
         feature_sets=utils.bottom_files(feature_sets)
         feature_sets=[ feature_i.split('/')[-1] for feature_i in feature_sets]
-    feature_sets+=[ feature_sets[:i] for i in range(1,len(feature_sets)+1)]
+    feature_sets+=[ feature_sets[:i] for i in range(2,len(feature_sets)+1)]
+    if(empty):
+        feature_sets.append(None)
     print(feature_sets)
     arg_other["common_paths"]=feature_sets
     multi_experiment([arg_other],ens,out_path)
