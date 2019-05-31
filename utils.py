@@ -1,4 +1,5 @@
 import os,os.path,re,pickle
+import itertools
 import numpy as np 
 import sklearn
 
@@ -96,6 +97,11 @@ def save_matrix(name,matrix):
     name+=".csv"
     np.savetxt(name,matrix,fmt="%.4f",delimiter=",")
 
+def set_prefix(name,prefix):
+    name=name.split(".")[0]
+    name+=prefix
+    return name
+
 def linear_reg(clf_acc,feats_quality,pred=False):
     clf_acc,feats_quality=np.array(clf_acc), np.array(feats_quality)
     regr=sklearn.linear_model.LinearRegression()
@@ -104,4 +110,12 @@ def linear_reg(clf_acc,feats_quality,pred=False):
     if(pred):
         return regr,regr.predict(feats_quality)
     else:    
-        return regr  
+        return regr
+
+def all_subsets(seq):
+    subsets=[[]]
+    for i in range(1,len(seq)):
+        subsets+=itertools.combinations(seq,i)
+    subsets=[ list(ss) for ss in subsets ]
+    subsets.append(seq)
+    return subsets
