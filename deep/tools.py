@@ -56,7 +56,7 @@ def train_ts_network(in_path,nn_path,num_iter=1500,ts_len=256):
     load_data=deep.preproc.LoadData("time_series",preproc=ts.sampling.SplineUpsampling(ts_len))
     X_train,y_train,X_test,y_test=load_data(in_path)
     dim=X_train.shape[-1]
-    ts_network=deep.convnet.make_model(y_train,"time_series",dim=(dim,ts_len))
+    ts_network=deep.convnet.make_model(y_train,"time_series",dim=(ts_len,dim))
     ts_network=deep.train.train_super_model(X_train,y_train,ts_network,num_iter=num_iter)
     verify_model(y_test,X_test,ts_network)
     ts_network.get_model().save(nn_path)

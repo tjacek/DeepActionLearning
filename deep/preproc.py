@@ -1,5 +1,5 @@
 import numpy as np
-import utils,seq.io
+import utils,seq.io,seq.tools
 
 class FramePreproc(object):
     def __init__(self,dim,norm=255):
@@ -52,14 +52,26 @@ class LoadData(object):
         self.preproc=preproc
 
     def __call__(self,in_path):
-        actions=self.read_actions(in_path)
-        if(self.preproc):
-            actions=[ action_i(self.preproc,whole_seq=False,feats=True) 
-                        for action_i in actions]
+        actions=self.get_multiple_actions(in_path)
         train,test=standard_split(actions)
         X_train,y_train=self.as_dataset(train)
         X_test,y_test=self.as_dataset(test)
         return X_train,y_train,X_test,y_test
+
+    def get_multiple_actions(self,in_path):
+        dir_paths=utils.bottom_dirs(in_path)
+        all_actions=[ self.get_actions(path_i) for path_i in dir_paths]
+        all_actions=[ {action_ij.name:action_ij 
+                        for action_ij in action_set_i} 
+                            for action_set_i in all_actions]
+        return seq.tools.concat_actions(all_actions).values()
+
+    def get_actions(self,in_path):
+        actions=self.read_actions(in_path)
+        if(self.preproc):
+            actions=[ action_i(self.preproc,whole_seq=False,feats=True) 
+                        for action_i in actions]
+        return actions
 
 def frame_dataset(in_path,as_dataset="persons",n_frames=4):
     load_data=LoadData(as_dataset)
