@@ -1,7 +1,7 @@
 import numpy as np
 import deep.reader,utils
 import basic.extr,deep.preproc
-import basic.group,preproc.sampling
+import basic.group,ts.sampling
 
 def group_ts_extractor(in_path,nn_path,out_path):
     def extr_helper(in_path_i,out_path_i):
@@ -19,10 +19,10 @@ def group_extractor(in_path,nn_path,out_path):
     grup_fun=basic.group.GroupFun(extr_helper)
     grup_fun(nn_path,out_path)    
 
-def build_ts_extractor(nn_path):
+def build_ts_extractor(nn_path,ts_len=256):
     nn_reader=deep.reader.NNReader()
     conv=nn_reader(nn_path)
-    conv.preproc=deep.preproc.TSPreproc(preproc.sampling.SplineUpsampling())
+    conv.preproc=deep.preproc.TSPreproc(ts.sampling.SplineUpsampling(ts_len))
     return basic.extr.TimeSeriesExtractor(conv,feat_fun=False)
 
 class FrameExtractorFactory(object):
