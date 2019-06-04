@@ -86,7 +86,3 @@ def get_x(n):
     x=x.astype(float)
     x/=float(n)
     return x
-
-if __name__ == "__main__":
-    agum=Agumentation([SamplingAgum(),Scale()])
-    agum('../wrap/mra/basic/data','../wrap/mra/agum/data')

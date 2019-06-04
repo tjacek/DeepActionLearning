@@ -15,7 +15,6 @@ class SplineUpsampling(object):
         old_x*=step  	
         cs=CubicSpline(old_x,feat_i)
         new_x=np.arange(self.new_size)
-        print(new_x.shape)
         return cs(new_x)
 
 def as_imgs(in_path,out_path):
