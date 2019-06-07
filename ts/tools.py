@@ -4,15 +4,14 @@ import seq.io,seq.tools,utils
 from sets import Set
 
 def for_ts_network(norm=True,size=128):
-    #all_funs=[ts.sampling.SplineUpsampling(size)]
-    #if(norm):
-    #    all_funs.append(ts.normal.z_norm)
-    #pipeline=ts.Pipeline(all_funs)
-    #return ts.Preproc(pipeline)
-    return ts.sampling.SplineUpsampling(size)
-    
+    sampling=ts.sampling.SplineUpsampling(size)
+    def pipline(feat_i):
+        feat_i=sampling(feat_i)
+        return ts.normal.z_norm(feat_i)
+    return pipline
+
 def basic_agum(in_path,out_path):
-    agum_upsampl=ts.agum.Agumentation([preproc.agum.SamplingAgum()])#,Scale()])
+    agum_upsampl=ts.agum.Agumentation([ts.agum.SamplingAgum(256,32),ts.agum.Scale()])
     agum_upsampl(in_path,out_path)
 
 def ts_concat(in_path,out_path,preproc=256):

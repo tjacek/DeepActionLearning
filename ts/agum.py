@@ -1,12 +1,14 @@
 import numpy as np
 import seq.io
 from scipy.interpolate import CubicSpline
+import ts.normal
 
 class Agumentation(object):
-    def __init__(self,agum_fun):
+    def __init__(self,agum_fun,norm=True):
         if(type(agum_fun)!=list):
             agum_fun=[agum_fun]
         self.agum_fun=agum_fun
+        self.norm=norm
 
     def __call__(self,in_path,out_path):
         read_actions=seq.io.build_action_reader(img_seq=False,as_dict=False,as_group=True)
@@ -16,7 +18,10 @@ class Agumentation(object):
         for action_i in train:
             agum_actions+=self.agum_action(action_i)
         agum_actions+=train
-        agum_actions+=test    
+        agum_actions+=test
+        if(self.norm):
+            agum_action=[action_i(ts.normal.z_norm,whole_seq=False,feats=True) 
+                            for action_i in agum_actions]    
         save_actions=seq.io.ActionWriter(False)
         save_actions(agum_actions,out_path)	
     
@@ -43,7 +48,7 @@ class Agumentation(object):
         return agum_feat
 
 class SamplingAgum(object):
-    def __init__(self,max_size=128,seq_size=16):
+    def __init__(self,max_size=256,seq_size=32):
         self.max_size=max_size
         self.seq_size=seq_size
 
@@ -56,7 +61,7 @@ class SamplingAgum(object):
             	agum_seqs.append(warp_seq(feat_i,size_j,self.seq_size,side_i))
         agum_seqs=[interpolate(self.max_size,agum_i) for agum_i in agum_seqs]
         return agum_seqs
-
+ 
 class Scale(object):
     def __init__(self,factor=2):
         self.factor=factor
@@ -67,7 +72,6 @@ class Scale(object):
         return [large,small]
 
 def warp_seq(feat_i,new_size,warp_size,side=True):
-    print(feat_i.shape)
     start,end=feat_i[:warp_size],feat_i[warp_size:]
     if(side):        
         start=interpolate(new_size,start)
