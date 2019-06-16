@@ -1,9 +1,7 @@
-import ensemble.exper
+import ensemble
 
-dataset="mhad"
-clf_type="LR"
-ens,ens_name=ensemble.exper.build_ensemble(dataset=dataset,clf_type=clf_type)
-
+ens=ensemble.Ensemble()
+dataset="mra"
 main="datasets/ICAISC/"
 single_exp={'handcrafted_path':main+"handcrafted/"+dataset,
            'deep_path': main+'/deep/selected/' +dataset,
