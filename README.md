@@ -32,3 +32,8 @@ ens=ensemble.Ensemble()
 
 ens(**single_exp)
 ```
+
+handcrafted_path- path to handcrafted features from CNN
+deep_path- path to features from CNN
+feats- first element of tuple is number of selected handcrafted features and secund number of selected deep features
+if any number is zero there is no selection.
