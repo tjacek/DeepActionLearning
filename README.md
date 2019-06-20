@@ -1,7 +1,7 @@
 Code and data for paper "Ensemble of Classifiers Using CNN and 
 Hand-Crafted Features for Depth-Based Action Recognition"
 
-Data description:
+**Data description:**
 
      datasets/ICAISC/deep - features from CNN.
 
@@ -17,11 +17,11 @@ Data description:
 
           MSR Action3D Dataset - https://documents.uow.edu.au/~wanqing/#Datasets
 
-Result reproduction:
+**Result reproduction:**
 
 python icaisc.py
 
-Code for result reproduction:
+**Code for result reproduction:**
 ```
 import ensemble
 dataset="mhad"
