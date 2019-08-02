@@ -1,4 +1,5 @@
 import numpy as np
+from sets import Set
 import utils
 import ensemble,utils,ensemble.tools
 import ensemble.exper.simple
@@ -9,15 +10,19 @@ def build_ensemble(dataset="?",clf_type="SVC",selector=None):
     ens_name= dataset+"_"+clf_type+".csv"
     return ens,ens_name
 
-def all_feats_exper(feature_sets,arg_other,out_path="exp",ens=None,gen_feat=None):
+def all_feats_exper(feature_sets,arg_other,out_path="exp",restrict=None,ens=None,gen_feat=None):
     arg_other['dir_path']=feature_sets
     if(type(feature_sets)==str):
         feature_sets=utils.bottom_files(feature_sets)
         feature_sets=[ feature_i.split('/')[-1] for feature_i in feature_sets]
-    #feature_sets+=[ feature_sets[:i] for i in range(2,len(feature_sets)+1)]
-    #if(empty):
-    #    feature_sets.append(None)
     feature_sets=utils.all_subsets(feature_sets)
+    if(restrict):
+        restrict=Set(restrict)
+        def restr_helper(feature_set_i):
+            feature_set_i=Set(feature_set_i)
+            return len(feature_set_i.intersection(restrict))>0
+        feature_sets=[feature_i for feature_i in feature_sets
+                        if(restr_helper(feature_i))]
     print(feature_sets)
     arg_other["common_paths"]=feature_sets
     multi_experiment([arg_other],ens,out_path)
